@@ -1,0 +1,15 @@
+{
+  "name": "eternal-rest-funeral-services",
+  "version": "1.0.0",
+  "description": "Eternal Rest Funeral Services – Full-Stack Web System (Node.js + MySQL)",
+  "private": true,
+  "scripts": {
+    "start":       "node backend/server.js",
+    "dev":         "cd backend && nodemon server.js",
+    "install:all": "cd backend && npm install",
+    "seed":        "cd backend && node scripts/seedAdmin.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Digital Memorial — Eternal Rest</title>
+<meta id="og-title" property="og:title" content="Digital Memorial"/>
+<meta id="og-desc"  property="og:description" content="Light a candle and share a memory."/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#1c2b4a;--navy-dark:#152039;--navy-light:#253560;
+  --gold:#b8973a;--gold-light:#d4af62;--gold-pale:#f5edd8;
+  --cream:#faf8f3;--white:#fff;--text:#2d3142;--muted:#6b7280;
+  --border:#e4ddd0;--success:#4a7c59;--danger:#c0392b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Lato',sans-serif;background:var(--navy-dark);color:var(--white);min-height:100vh;}
+
+/* HERO */
+.mem-hero{position:relative;min-height:340px;background:var(--navy-dark);overflow:hidden;display:flex;align-items:flex-end;}
+.mem-hero-bg{position:absolute;inset:0;background:linear-gradient(180deg,rgba(21,32,57,0.3) 0%,rgba(21,32,57,0.95) 80%,var(--navy-dark) 100%);}
+.mem-hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.35;}
+.mem-hero-content{position:relative;width:100%;padding:2rem 1.5rem 2.5rem;}
+.mem-avatar-large{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,rgba(184,151,58,0.5),rgba(184,151,58,0.2));border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--gold-light);margin-bottom:1rem;flex-shrink:0;}
+.mem-name{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--white);line-height:1.1;}
+.mem-years{font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light);margin:0.4rem 0 0.8rem;}
+.mem-quote-hero{font-size:1rem;color:rgba(255,255,255,0.7);font-style:italic;line-height:1.6;max-width:520px;}
+
+/* STATS BAR */
+.stats-bar{background:rgba(255,255,255,0.04);border-top:1px solid rgba(255,255,255,0.08);border-bottom:1px solid rgba(255,255,255,0.08);padding:0.9rem 0;}
+.stat-pill{text-align:center;}
+.stat-pill .num{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--gold-light);font-weight:700;}
+.stat-pill .lbl{font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);}
+
+/* SECTIONS */
+.mem-section{padding:2.5rem 0;}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold-light);margin-bottom:1.2rem;display:flex;align-items:center;gap:0.6rem;}
+.sec-title i{font-size:1rem;}
+
+/* SLIDESHOW */
+.slideshow-wrap{position:relative;background:rgba(0,0,0,0.3);border-radius:12px;overflow:hidden;aspect-ratio:16/9;max-height:400px;}
+.slideshow-wrap img.slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 0.8s;}
+.slideshow-wrap img.slide.active{opacity:1;}
+.slideshow-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.3);gap:0.5rem;font-size:0.85rem;padding:2rem;}
+.slideshow-empty i{font-size:2.5rem;}
+.slide-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);border:none;color:white;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:10;}
+.slide-nav:hover{background:rgba(0,0,0,0.8);}
+.slide-nav.prev{left:10px;}
+.slide-nav.next{right:10px;}
+.slide-dots{display:flex;justify-content:center;gap:6px;margin-top:0.7rem;flex-wrap:wrap;}
+.slide-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.25);cursor:pointer;border:none;transition:background 0.2s;}
+.slide-dot.active{background:var(--gold);}
+.slide-count{position:absolute;bottom:10px;right:12px;background:rgba(0,0,0,0.5);color:white;font-size:0.72rem;padding:0.2rem 0.6rem;border-radius:10px;}
+
+/* PHOTO UPLOAD */
+.photo-upload-zone{border:2px dashed rgba(184,151,58,0.4);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(255,255,255,0.03);}
+.photo-upload-zone:hover,.photo-upload-zone.drag-over{border-color:var(--gold);background:rgba(184,151,58,0.07);}
+.photo-upload-zone i{font-size:2rem;color:var(--gold);margin-bottom:0.5rem;display:block;}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:1rem;}
+.photo-thumb{aspect-ratio:1;border-radius:8px;overflow:hidden;position:relative;cursor:pointer;}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;transition:transform 0.2s;}
+.photo-thumb:hover img{transform:scale(1.05);}
+.photo-thumb-del{position:absolute;top:4px;right:4px;background:rgba(192,57,43,0.85);color:white;border:none;border-radius:50%;width:22px;height:22px;font-size:0.65rem;display:none;align-items:center;justify-content:center;cursor:pointer;}
+.photo-thumb:hover .photo-thumb-del{display:flex;}
+
+/* CANDLE */
+.candle-big{background:none;border:2px solid rgba(184,151,58,0.3);border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.3s;width:100%;}
+.candle-big:hover{border-color:var(--gold);background:rgba(184,151,58,0.08);}
+.candle-big .flame{font-size:2.5rem;display:block;transition:transform 0.2s;}
+.candle-big:hover .flame{transform:scale(1.2);}
+.candle-big .candle-label{font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:0.4rem;display:block;}
+.candle-big .candle-count{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold-light);}
+
+/* TRIBUTES / MESSAGES */
+.tribute-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:1.1rem 1.2rem;margin-bottom:0.8rem;}
+.tribute-author{font-weight:700;font-size:0.85rem;color:var(--gold-light);}
+.tribute-relation{font-size:0.72rem;color:rgba(255,255,255,0.4);margin-left:0.4rem;}
+.tribute-date{font-size:0.7rem;color:rgba(255,255,255,0.3);float:right;}
+.tribute-msg{font-size:0.88rem;color:rgba(255,255,255,0.75);margin-top:0.5rem;line-height:1.6;}
+.tribute-photo-thumb{width:60px;height:60px;border-radius:6px;object-fit:cover;float:right;margin-left:0.8rem;}
+
+/* TRIBUTE FORM */
+.tribute-form{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.3rem;}
+.form-ctrl-dark{background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:6px;padding:0.65rem 1rem;font-size:0.88rem;width:100%;color:var(--white);font-family:'Lato';transition:border 0.2s;outline:none;}
+.form-ctrl-dark:focus{border-color:var(--gold);background:rgba(255,255,255,0.1);}
+.form-ctrl-dark::placeholder{color:rgba(255,255,255,0.3);}
+.form-label-dark{font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:0.35rem;display:block;}
+.btn-gold{background:var(--gold);color:var(--white);border:none;border-radius:6px;padding:0.65rem 1.6rem;font-size:0.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background 0.2s;}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-outline-gold{background:transparent;color:var(--gold-light);border:1.5px solid rgba(184,151,58,0.4);border-radius:6px;padding:0.5rem 1rem;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-outline-gold:hover{border-color:var(--gold);background:rgba(184,151,58,0.1);}
+
+/* FOOTER BACK LINK */
+.back-bar{background:rgba(0,0,0,0.3);padding:1rem 0;text-align:center;border-top:1px solid rgba(255,255,255,0.07);}
+
+/* LOADING / ERROR */
+.mem-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:1rem;color:rgba(255,255,255,0.4);}
+
+/* LOGIN GATE */
+.mem-gate{position:fixed;inset:0;background:linear-gradient(160deg,var(--navy-dark) 0%,#0d1624 100%);display:flex;align-items:center;justify-content:center;z-index:9990;padding:1rem;}
+.mem-gate-box{background:rgba(255,255,255,0.05);border:1px solid rgba(184,151,58,0.3);border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:400px;text-align:center;backdrop-filter:blur(4px);}
+.mem-gate-icon{width:72px;height:72px;background:rgba(184,151,58,0.15);border:2px solid rgba(184,151,58,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-size:1.8rem;color:var(--gold);}
+.mem-gate-title{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--white);margin-bottom:0.4rem;}
+.mem-gate-sub{font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:1.8rem;line-height:1.6;}
+.gate-tab-row{display:flex;border:1px solid rgba(255,255,255,0.1);border-radius:8px;margin-bottom:1.2rem;overflow:hidden;}
+.gate-tab{flex:1;background:none;border:none;padding:0.65rem;font-size:0.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);cursor:pointer;transition:all 0.2s;}
+.gate-tab.active{background:rgba(184,151,58,0.2);color:var(--gold-light);}
+.gate-input{background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.12);border-radius:7px;padding:0.65rem 1rem;font-size:0.88rem;width:100%;color:var(--white);font-family:'Lato';outline:none;transition:border 0.2s;margin-bottom:0.75rem;}
+.gate-input:focus{border-color:var(--gold);background:rgba(255,255,255,0.1);}
+.gate-input::placeholder{color:rgba(255,255,255,0.3);}
+.gate-btn{background:var(--gold);color:var(--white);border:none;border-radius:7px;padding:0.75rem;font-size:0.88rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;width:100%;cursor:pointer;transition:background 0.2s;margin-top:0.3rem;}
+.gate-btn:hover{background:var(--gold-light);}
+.gate-err{color:#fca5a5;font-size:0.8rem;margin-bottom:0.7rem;min-height:1rem;}
+.gate-link{color:var(--gold);font-weight:700;cursor:pointer;text-decoration:none;}
+.gate-link:hover{color:var(--gold-light);}
+.spinner-gold{width:36px;height:36px;border:3px solid rgba(184,151,58,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+
+/* ADMIN PHOTO MODERATION */
+.photo-admin-bar{position:absolute;inset:0;background:rgba(21,32,57,0.7);display:none;align-items:center;justify-content:center;gap:8px;border-radius:8px;}
+.photo-thumb:hover .photo-admin-bar{display:flex;}
+.photo-admin-btn{width:32px;height:32px;border-radius:6px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.75rem;transition:all 0.2s;}
+.photo-admin-btn.edit-cap{background:rgba(184,151,58,0.9);color:#fff;}
+.photo-admin-btn.edit-cap:hover{background:var(--gold);}
+.photo-admin-btn.del-photo{background:rgba(192,57,43,0.9);color:#fff;}
+.photo-admin-btn.del-photo:hover{background:var(--danger);}
+.photo-caption-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.65);color:rgba(255,255,255,0.85);font-size:0.65rem;padding:3px 6px;border-radius:0 0 8px 8px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
+.admin-mode-bar{background:linear-gradient(to right,var(--navy-dark),#2d1060);border-bottom:2px solid var(--gold);padding:0.6rem 1rem;display:flex;align-items:center;justify-content:space-between;font-size:0.8rem;}
+.admin-mode-label{color:var(--gold-light);font-weight:700;letter-spacing:0.5px;}
+.admin-mode-label i{margin-right:0.4rem;}
+/* LIGHTBOX */
+.lightbox-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:none;align-items:center;justify-content:center;}
+.lightbox-overlay.open{display:flex;}
+.lightbox-img{max-width:90vw;max-height:88vh;border-radius:8px;object-fit:contain;}
+.lightbox-close{position:absolute;top:16px;right:20px;background:none;border:none;color:white;font-size:1.6rem;cursor:pointer;z-index:1;}
+
+/* TOAST */
+.toast-mem{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--navy);border:1px solid var(--gold);color:var(--white);padding:0.7rem 1.5rem;border-radius:8px;font-size:0.85rem;z-index:9998;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+.toast-mem.show{opacity:1;}
+
+/* MEMORIAL VIDEO GENERATOR */
+.video-gen-btn{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#fff;border:none;border-radius:10px;padding:0.9rem 1.6rem;font-size:0.88rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.3s;display:inline-flex;align-items:center;gap:0.6rem;box-shadow:0 4px 16px rgba(184,151,58,0.35);}
+.video-gen-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(184,151,58,0.5);}
+.video-gen-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.video-progress-bar{height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;margin:0.8rem 0;}
+.video-progress-fill{height:100%;background:linear-gradient(to right,var(--gold),var(--gold-light));border-radius:3px;transition:width 0.3s;width:0%;}
+.music-selector{display:flex;gap:0.5rem;flex-wrap:wrap;margin:0.8rem 0;}
+.music-chip{background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);border-radius:20px;padding:0.35rem 0.85rem;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:0.4rem;}
+.music-chip:hover{border-color:var(--gold);color:var(--gold-light);}
+.music-chip.selected{background:rgba(184,151,58,0.2);border-color:var(--gold);color:var(--gold-light);}
+.music-chip i{font-size:0.8rem;}
+.video-preview-wrap{background:#000;border-radius:10px;overflow:hidden;aspect-ratio:16/9;position:relative;margin:0.8rem 0;display:none;}
+.video-preview-wrap video{width:100%;height:100%;display:block;}
+.video-dl-btn{background:var(--gold);color:#fff;border:none;border-radius:8px;padding:0.65rem 1.4rem;font-size:0.82rem;font-weight:700;letter-spacing:1px;cursor:pointer;transition:background 0.2s;display:inline-flex;align-items:center;gap:0.5rem;}
+.video-dl-btn:hover{background:var(--gold-light);}
+.gen-status{font-size:0.8rem;color:rgba(255,255,255,0.5);margin-top:0.4rem;min-height:1.2rem;text-align:center;}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN GATE (shown if visitor is not a registered client) ── -->
+<div class="mem-gate" id="memLoginGate" style="display:none;">
+  <div class="mem-gate-box">
+    <div class="mem-gate-icon"><i class="fas fa-lock"></i></div>
+    <div class="mem-gate-title">Members Only</div>
+    <p class="mem-gate-sub">This memorial page is for registered clients of Eternal Rest.<br/>Please sign in or create a free account to continue.</p>
+
+    <div class="gate-tab-row">
+      <button class="gate-tab active" id="gateTabLogin" onclick="switchGateTab('login')">Sign In</button>
+      <button class="gate-tab" id="gateTabRegister" onclick="switchGateTab('register')">Create Account</button>
+    </div>
+
+    <!-- SIGN IN PANEL -->
+    <div id="gatePanelLogin">
+      <input type="email"    class="gate-input" id="gateEmail"    placeholder="e.g. jdelacruz@gmail.com"  onkeydown="if(event.key==='Enter')gateLogin()"/>
+      <input type="password" class="gate-input" id="gatePassword" placeholder="Enter your password"       onkeydown="if(event.key==='Enter')gateLogin()"/>
+      <div class="gate-err"  id="gateLoginErr"></div>
+      <button class="gate-btn" id="gateBtnLogin" onclick="gateLogin()"><i class="fas fa-sign-in-alt me-2"></i>Sign In</button>
+      <p style="font-size:0.8rem;color:rgba(255,255,255,0.35);margin-top:1.2rem;">
+        No account? <a class="gate-link" onclick="switchGateTab('register')">Create one free →</a>
+      </p>
+    </div>
+
+    <!-- REGISTER PANEL -->
+    <div id="gatePanelRegister" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+        <input type="text" class="gate-input" id="gateRegFname" placeholder="e.g. Maria"/>
+        <input type="text" class="gate-input" id="gateRegLname" placeholder="e.g. Santos"/>
+      </div>
+      <input type="email"    class="gate-input" id="gateRegEmail"   placeholder="e.g. jdelacruz@gmail.com"/>
+      <input type="tel"      class="gate-input" id="gateRegPhone"   placeholder="e.g. 0917 123 4567"/>
+      <input type="password" class="gate-input" id="gateRegPass"    placeholder="At least 6 characters"/>
+      <input type="password" class="gate-input" id="gateRegConfirm" placeholder="Re-enter your password" onkeydown="if(event.key==='Enter')gateRegister()"/>
+      <div class="gate-err" id="gateRegErr"></div>
+      <button class="gate-btn" id="gateBtnRegister" onclick="gateRegister()"><i class="fas fa-user-plus me-2"></i>Create Account</button>
+      <p style="font-size:0.8rem;color:rgba(255,255,255,0.35);margin-top:1.2rem;">
+        Already have an account? <a class="gate-link" onclick="switchGateTab('login')">Sign in →</a>
+      </p>
+    </div>
+
+    <div style="margin-top:1.5rem;border-top:1px solid rgba(255,255,255,0.07);padding-top:1rem;">
+      <a href="index.html#memorials" style="font-size:0.78rem;color:rgba(255,255,255,0.3);text-decoration:none;"><i class="fas fa-arrow-left me-1"></i>Back to memorial wall</a>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN MODE BANNER (visible only when admin token present) -->
+<div class="admin-mode-bar" id="adminModeBanner" style="display:none;">
+  <span class="admin-mode-label"><i class="fas fa-shield-alt"></i>Admin moderation mode — hover photos to edit or delete</span>
+  <a href="admin.html" style="color:rgba(255,255,255,0.4);font-size:0.75rem;text-decoration:none;"><i class="fas fa-arrow-left me-1"></i>Back to Admin</a>
+</div>
+<script>
+  // Show admin banner immediately if admin token is in localStorage
+  (function() {
+    var t = localStorage.getItem('er_admin_token');
+    if (!t) return;
+    try {
+      var p = JSON.parse(atob(t.split('.')[1]));
+      if (!p.exp || Date.now() / 1000 < p.exp) {
+        document.getElementById('adminModeBanner').style.display = 'flex';
+      }
+    } catch(e) {}
+  })();
+</script>
+
+<!-- LOADING STATE -->
+<div class="mem-loading" id="memLoading">
+  <div class="spinner-gold"></div>
+  <div>Loading memorial…</div>
+</div>
+
+<!-- MAIN CONTENT (hidden until loaded) -->
+<div id="memContent" style="display:none;">
+
+  <!-- HERO -->
+  <div class="mem-hero" id="memHero">
+    <img id="memHeroBg" src="" alt="" class="mem-hero-photo" style="display:none;"/>
+    <div class="mem-hero-bg"></div>
+    <div class="container mem-hero-content">
+      <div class="d-flex align-items-end gap-4 flex-wrap">
+        <div class="mem-avatar-large" id="memInitials">—</div>
+        <div>
+          <div class="mem-name" id="memName">—</div>
+          <div class="mem-years" id="memYears"></div>
+          <div class="mem-quote-hero" id="memQuote"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="container">
+      <div class="row g-0 text-center">
+        <div class="col-4 stat-pill">
+          <div class="num" id="statCandles">0</div>
+          <div class="lbl">Candles lit</div>
+        </div>
+        <div class="col-4 stat-pill">
+          <div class="num" id="statPhotos">0</div>
+          <div class="lbl">Photos shared</div>
+        </div>
+        <div class="col-4 stat-pill">
+          <div class="num" id="statTributes">0</div>
+          <div class="lbl">Tributes left</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN BODY -->
+  <div class="container mem-section">
+    <div class="row g-4">
+
+      <!-- LEFT: Slideshow + photo upload -->
+      <div class="col-lg-7">
+
+        <!-- Slideshow -->
+        <div class="sec-title"><i class="fas fa-images"></i> Photo memories</div>
+        <div class="slideshow-wrap" id="slideshowWrap">
+          <div class="slideshow-empty" id="slideshowEmpty">
+            <i class="fas fa-camera"></i>
+            <span>No photos yet — be the first to share one</span>
+          </div>
+          <button class="slide-nav prev" id="slidePrev" onclick="slideNav(-1)" style="display:none;"><i class="fas fa-chevron-left"></i></button>
+          <button class="slide-nav next" id="slideNext" onclick="slideNav(1)"  style="display:none;"><i class="fas fa-chevron-right"></i></button>
+          <div class="slide-count" id="slideCount" style="display:none;"></div>
+        </div>
+        <div class="slide-dots" id="slideDots"></div>
+
+        <!-- Upload zone -->
+        <div class="mt-3">
+          <div class="photo-upload-zone" id="photoDropZone"
+               onclick="document.getElementById('photoFileInput').click()"
+               ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <div style="font-size:0.85rem;font-weight:700;color:rgba(255,255,255,0.7);">Click or drag to add a photo</div>
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:0.25rem;">JPG, PNG or WEBP — max 5 MB</div>
+          </div>
+          <input type="file" id="photoFileInput" accept="image/jpeg,image/png,image/webp" style="display:none;" multiple onchange="onFilesSelected(this)"/>
+          <div id="uploadStatus" style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:0.5rem;text-align:center;"></div>
+        </div>
+
+        <!-- Photo thumbnail grid -->
+        <div class="photo-grid" id="photoGrid"></div>
+      </div>
+
+      <!-- RIGHT: Candle + tributes -->
+      <div class="col-lg-5">
+
+        <!-- Light a candle -->
+        <div class="sec-title"><i class="fas fa-fire"></i> Light a candle</div>
+        <button class="candle-big mb-4" onclick="lightCandle()">
+          <span class="flame">🕯️</span>
+          <span class="candle-count" id="candleCount">0 candles lit</span>
+          <span class="candle-label">Tap to light a candle in their memory</span>
+        </button>
+
+        <!-- Memorial Video Generator -->
+        <div class="sec-title"><i class="fas fa-film"></i> Memorial Video</div>
+        <div id="memVideoSection" style="background:rgba(255,255,255,0.04);border:1px solid rgba(184,151,58,0.25);border-radius:12px;padding:1.4rem;margin-bottom:1.4rem;">
+          <p style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-bottom:1rem;line-height:1.6;">
+            Generate a beautiful tribute video from all the photos shared on this memorial — with gentle background music. Download and share with family and friends.
+          </p>
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0.5rem;">Choose Background Music</div>
+          <div class="music-selector" id="musicSelector">
+            <button class="music-chip selected" data-track="peaceful" onclick="selectMusic(this,'peaceful')"><i class="fas fa-dove"></i> Peaceful Piano</button>
+            <button class="music-chip" data-track="gentle" onclick="selectMusic(this,'gentle')"><i class="fas fa-wind"></i> Gentle Strings</button>
+            <button class="music-chip" data-track="solemn" onclick="selectMusic(this,'solemn')"><i class="fas fa-church"></i> Solemn Choir</button>
+            <button class="music-chip" data-track="warm" onclick="selectMusic(this,'warm')"><i class="fas fa-sun"></i> Warm Acoustic</button>
+            <button class="music-chip" data-track="silence" onclick="selectMusic(this,'silence')"><i class="fas fa-volume-mute"></i> No Music</button>
+          </div>
+          <div id="videoProgressWrap" style="display:none;margin-top:0.8rem;">
+            <div class="video-progress-bar"><div class="video-progress-fill" id="videoProgressFill"></div></div>
+            <div class="gen-status" id="videoGenStatus">Preparing frames…</div>
+          </div>
+          <div class="video-preview-wrap" id="videoPreviewWrap"><video id="videoPreview" controls></video></div>
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;justify-content:center;margin-top:0.8rem;">
+            <button class="video-gen-btn" id="btnGenerateVideo" onclick="generateMemorialVideo()"><i class="fas fa-magic me-1"></i>Generate Memorial Video</button>
+            <button class="video-dl-btn" id="btnDownloadVideo" style="display:none;" onclick="downloadMemorialVideo()"><i class="fas fa-download me-1"></i>Download Video</button>
+          </div>
+          <div class="gen-status" id="videoReadyMsg" style="display:none;color:var(--gold-light);margin-top:0.5rem;"><i class="fas fa-check-circle me-1"></i>Video ready! Preview above or download.</div>
+        </div>
+
+        <!-- QR Code Section -->
+        <div class="sec-title"><i class="fas fa-qrcode"></i> Memorial QR Code</div>
+        <div id="memQRSection" style="background:rgba(255,255,255,0.04);border:1px solid rgba(184,151,58,0.25);border-radius:12px;padding:1.2rem;margin-bottom:1.5rem;text-align:center;">
+          <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);margin-bottom:1rem;">Share this memorial with family and friends — just scan the QR code.</p>
+          <div style="display:flex;justify-content:center;margin-bottom:1rem;">
+            <div id="memQRCodeWrap" style="background:#fff;border-radius:10px;padding:1rem;display:inline-block;box-shadow:0 4px 16px rgba(0,0,0,0.2);">
+              <div id="memQRCode"></div>
+            </div>
+          </div>
+          <div style="font-family:monospace;font-size:0.72rem;color:rgba(255,255,255,0.4);word-break:break-all;background:rgba(0,0,0,0.2);border-radius:6px;padding:0.4rem 0.7rem;margin-bottom:0.8rem;" id="memQRUrl"></div>
+          <div class="d-flex gap-2 justify-content-center">
+            <button class="btn-outline-gold" onclick="downloadMemQR()"><i class="fas fa-download me-1"></i>Download QR</button>
+            <button class="btn-outline-gold" onclick="copyMemQRLink()"><i class="fas fa-copy me-1"></i>Copy Link</button>
+          </div>
+        </div>
+
+        <!-- Leave a tribute -->
+        <div class="sec-title"><i class="fas fa-comment-heart"></i> Leave a tribute</div>
+        <div class="tribute-form mb-4">
+          <div class="row g-2 mb-2">
+            <div class="col-md-6">
+              <label class="form-label-dark">Your name *</label>
+              <input type="text" class="form-ctrl-dark" id="tributeName" placeholder="e.g. Maria Santos"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label-dark">Relationship</label>
+              <select class="form-ctrl-dark" id="tributeRelation" style="cursor:pointer;">
+                <option value="">Select…</option>
+                <option>Family</option><option>Friend</option><option>Colleague</option>
+                <option>Neighbor</option><option>Classmate</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="form-label-dark">Your message *</label>
+            <textarea class="form-ctrl-dark" id="tributeMsg" rows="3" placeholder="e.g. You were a light to everyone around you. Rest in peace."></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label-dark">Attach a photo (optional)</label>
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn-outline-gold" onclick="document.getElementById('tributePhotoInput').click()">
+                <i class="fas fa-image me-1"></i>Choose photo
+              </button>
+              <span id="tributePhotoName" style="font-size:0.78rem;color:rgba(255,255,255,0.4);">No file selected</span>
+            </div>
+            <input type="file" id="tributePhotoInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="onTributePhotoSelected(this)"/>
+          </div>
+          <button class="btn-gold w-100" onclick="submitTribute()"><i class="fas fa-heart me-2"></i>Post Tribute</button>
+        </div>
+
+        <!-- Tributes list -->
+        <div class="sec-title"><i class="fas fa-scroll"></i> Tributes <span id="tributeCount" style="font-size:0.85rem;color:rgba(255,255,255,0.4);font-family:'Lato';">(0)</span></div>
+        <div id="tributesList">
+          <div style="color:rgba(255,255,255,0.3);font-size:0.85rem;text-align:center;padding:1.5rem 0;">No tributes yet. Be the first to leave one.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BACK -->
+  <div class="back-bar">
+    <a href="index.html#memorials" style="color:rgba(255,255,255,0.4);text-decoration:none;font-size:0.82rem;"><i class="fas fa-arrow-left me-2"></i>Back to Memorial Wall</a>
+    &nbsp;·&nbsp;
+    <span id="memViewerLabel" style="color:rgba(255,255,255,0.2);font-size:0.82rem;">Eternal Rest Funeral Home</span>
+    &nbsp;·&nbsp;
+    <a href="#" id="memSignOutLink" onclick="memSignOut();return false;" style="display:none;color:rgba(255,255,255,0.25);font-size:0.75rem;text-decoration:none;" title="Sign out"><i class="fas fa-sign-out-alt me-1"></i>Sign out</a>
+  </div>
+</div>
+
+<!-- ERROR STATE -->
+<div class="mem-loading" id="memError" style="display:none;">
+  <i class="fas fa-dove" style="font-size:2.5rem;color:rgba(184,151,58,0.4);"></i>
+  <div>Memorial not found.</div>
+  <a href="index.html#memorials" style="color:var(--gold-light);font-size:0.85rem;margin-top:0.5rem;">← Return to memorial wall</a>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
+  <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:0.7rem;">
+    <img class="lightbox-img" id="lightboxImg" src="" alt="" onclick="event.stopPropagation()"/>
+    <div id="lightboxCaption" style="color:rgba(255,255,255,0.6);font-size:0.85rem;font-style:italic;text-align:center;max-width:80vw;min-height:1rem;"></div>
+  </div>
+</div>
+
+<div class="toast-mem" id="toastMem"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const API_BASE    = 'http://localhost:3000/api';
+let MEM_ID        = null;
+let MEM_DATA      = null;
+let PHOTOS        = [];
+let TRIBUTES      = [];
+let slideIdx      = 0;
+let tributePhoto  = null;
+// Token priority: admin first, then client
+const ADMIN_TOKEN  = localStorage.getItem('er_admin_token')  || null;
+const CLIENT_TOKEN = localStorage.getItem('er_client_token') || null;
+
+// Validate tokens — check JWT expiry so stale tokens don't grant access
+function isTokenValid(token) {
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (payload.exp && Date.now() / 1000 > payload.exp) return false;
+    return true;
+  } catch { return false; }
+}
+
+const IS_ADMIN     = isTokenValid(ADMIN_TOKEN);
+const IS_CLIENT    = isTokenValid(CLIENT_TOKEN);
+const ACTIVE_TOKEN = (IS_ADMIN ? ADMIN_TOKEN : null) || (IS_CLIENT ? CLIENT_TOKEN : null) || null;
+
+async function apiFetch(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  if (ACTIVE_TOKEN && !headers['Authorization']) headers['Authorization'] = 'Bearer ' + ACTIVE_TOKEN;
+  delete opts.headers;
+  try {
+    const res = await fetch(API_BASE + path, { headers, ...opts });
+    try { return await res.json(); }
+    catch { return { success: false, message: 'Server returned invalid response.' }; }
+  } catch(e) {
+    console.error('[apiFetch memorial] ' + path, e.message);
+    return { success: false, message: 'Cannot reach server – make sure the backend is running on port 3000.' };
+  }
+}
+
+// ── GATE: auth helpers ────────────────────────────────────────────────────────
+function showGate() {
+  document.getElementById('memLoading').style.display = 'none';
+  document.getElementById('memLoginGate').style.display = 'flex';
+}
+
+function switchGateTab(tab) {
+  document.getElementById('gateTabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('gateTabRegister').classList.toggle('active', tab === 'register');
+  document.getElementById('gatePanelLogin').style.display    = tab === 'login'    ? 'block' : 'none';
+  document.getElementById('gatePanelRegister').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('gateLoginErr').textContent = '';
+  document.getElementById('gateRegErr').textContent   = '';
+}
+
+async function gateLogin() {
+  const email    = document.getElementById('gateEmail').value.trim();
+  const password = document.getElementById('gatePassword').value;
+  const errEl    = document.getElementById('gateLoginErr');
+  const btn      = document.getElementById('gateBtnLogin');
+  errEl.textContent = '';
+  if (!email || !password) { errEl.textContent = 'Email and password are required.'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  const r = await fetch(API_BASE + '/clients/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  }).then(res => res.json()).catch(() => ({ success: false, message: 'Network error.' }));
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Sign In';
+  if (r.success) {
+    localStorage.setItem('er_client_token', r.token);
+    document.getElementById('memLoginGate').style.display = 'none';
+    document.getElementById('memLoading').style.display   = 'flex';
+    loadMemorial();
+  } else {
+    errEl.textContent = r.message || 'Login failed.';
+  }
+}
+
+async function gateRegister() {
+  const fname   = document.getElementById('gateRegFname').value.trim();
+  const lname   = document.getElementById('gateRegLname').value.trim();
+  const email   = document.getElementById('gateRegEmail').value.trim();
+  const phone   = document.getElementById('gateRegPhone').value.trim();
+  const pass    = document.getElementById('gateRegPass').value;
+  const confirm = document.getElementById('gateRegConfirm').value;
+  const errEl   = document.getElementById('gateRegErr');
+  const btn     = document.getElementById('gateBtnRegister');
+  errEl.textContent = '';
+  if (!fname || !lname || !email || !phone || !pass) { errEl.textContent = 'All fields are required.'; return; }
+  if (pass !== confirm) { errEl.textContent = 'Passwords do not match.'; return; }
+  if (pass.length < 6)  { errEl.textContent = 'Password must be at least 6 characters.'; return; }
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  const r = await fetch(API_BASE + '/clients/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fname, lname, email, phone, password: pass })
+  }).then(res => res.json()).catch(() => ({ success: false, message: 'Network error.' }));
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Create Account';
+  if (r.success) {
+    localStorage.setItem('er_client_token', r.token);
+    document.getElementById('memLoginGate').style.display = 'none';
+    document.getElementById('memLoading').style.display   = 'flex';
+    loadMemorial();
+  } else {
+    errEl.textContent = r.message || 'Registration failed.';
+  }
+}
+
+function showToast(msg, duration = 3000) {
+  const t = document.getElementById('toastMem');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+(async () => {
+  const params = new URLSearchParams(window.location.search);
+  MEM_ID = params.get('memorial') || params.get('id');
+  if (!MEM_ID) { showError(); return; }
+
+  // Gate: must be a valid (non-expired) logged-in client OR admin to view
+  if (!IS_ADMIN && !IS_CLIENT) {
+    // Clear any stale/expired tokens
+    if (ADMIN_TOKEN  && !IS_ADMIN)  localStorage.removeItem('er_admin_token');
+    if (CLIENT_TOKEN && !IS_CLIENT) localStorage.removeItem('er_client_token');
+    showGate();
+    return;
+  }
+
+  loadMemorial();
+})();
+
+async function loadMemorial() {
+  const [mRes, pRes, tRes] = await Promise.all([
+    apiFetch('/memorials/' + MEM_ID),
+    apiFetch('/memorials/' + MEM_ID + '/photos'),
+    apiFetch('/memorials/' + MEM_ID + '/tributes')
+  ]);
+
+  if (!mRes.success) { showError(); return; }
+
+  MEM_DATA = mRes.data;
+  PHOTOS   = pRes.success  ? pRes.data  : [];
+  TRIBUTES = tRes.success  ? tRes.data  : [];
+
+  document.title = MEM_DATA.name + ' — Digital Memorial · Eternal Rest';
+  document.getElementById('og-title').content = MEM_DATA.name + ' — Digital Memorial';
+  document.getElementById('og-desc').content  = MEM_DATA.quote || 'Forever in our hearts.';
+
+  document.getElementById('memInitials').textContent = MEM_DATA.initials || MEM_DATA.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('memName').textContent     = MEM_DATA.name;
+  document.getElementById('memQuote').textContent    = MEM_DATA.quote ? '"' + MEM_DATA.quote + '"' : '';
+
+  const born = MEM_DATA.born ? new Date(MEM_DATA.born).getFullYear() : null;
+  const died = MEM_DATA.died ? new Date(MEM_DATA.died).getFullYear() : null;
+  document.getElementById('memYears').textContent = born && died ? born + ' – ' + died : (born || died || '');
+
+  document.getElementById('statCandles').textContent  = MEM_DATA.candles || 0;
+  document.getElementById('candleCount').textContent  = (MEM_DATA.candles || 0) + ' candles lit';
+
+  // Show admin banner if admin is viewing
+  if (IS_ADMIN) document.getElementById('adminModeBanner').style.display = 'flex';
+  else document.getElementById('adminModeBanner').style.display = 'none';
+
+  renderPhotos();
+  renderTributes();
+  updateStats();
+
+  // Show viewer identity in back bar
+  const signOutLink  = document.getElementById('memSignOutLink');
+  const viewerLabel  = document.getElementById('memViewerLabel');
+  const clientToken  = localStorage.getItem('er_client_token');
+  if (clientToken && !IS_ADMIN) {
+    try {
+      const payload = JSON.parse(atob(clientToken.split('.')[1]));
+      if (viewerLabel) viewerLabel.textContent = 'Viewing as ' + payload.fname + ' ' + (payload.lname || '');
+      if (signOutLink) signOutLink.style.display = 'inline';
+    } catch {}
+  }
+
+  document.getElementById('memLoading').style.display = 'none';
+  document.getElementById('memContent').style.display = 'block';
+
+  // Build QR code for this memorial
+  setTimeout(() => buildMemorialQR(MEM_ID), 200);
+}
+
+function showError() {
+  document.getElementById('memLoading').style.display = 'none';
+  document.getElementById('memError').style.display   = 'flex';
+}
+
+function memSignOut() {
+  localStorage.removeItem('er_client_token');
+  window.location.reload();
+}
+
+// ── PHOTOS / SLIDESHOW ────────────────────────────────────────────────────────
+function renderPhotos() {
+  const wrap  = document.getElementById('slideshowWrap');
+  const empty = document.getElementById('slideshowEmpty');
+  const prev  = document.getElementById('slidePrev');
+  const next  = document.getElementById('slideNext');
+  const count = document.getElementById('slideCount');
+  const dots  = document.getElementById('slideDots');
+  const grid  = document.getElementById('photoGrid');
+
+  // Remove old slides
+  wrap.querySelectorAll('img.slide').forEach(el => el.remove());
+  dots.innerHTML = '';
+  grid.innerHTML = '';
+
+  if (!PHOTOS.length) {
+    empty.style.display = 'flex';
+    prev.style.display = next.style.display = count.style.display = 'none';
+    document.getElementById('statPhotos').textContent = 0;
+    return;
+  }
+
+  empty.style.display = 'none';
+  prev.style.display  = next.style.display = PHOTOS.length > 1 ? 'flex' : 'none';
+  count.style.display = 'block';
+
+  // Use first photo as hero background
+  const heroBg = document.getElementById('memHeroBg');
+  heroBg.src = PHOTOS[0].photo_url;
+  heroBg.style.display = 'block';
+
+  PHOTOS.forEach((p, i) => {
+    // Slide
+    const img = document.createElement('img');
+    img.className = 'slide' + (i === slideIdx ? ' active' : '');
+    img.src = p.photo_url;
+    img.alt = p.caption || 'Memorial photo';
+    img.onclick = () => openLightbox(p.photo_url);
+    wrap.insertBefore(img, prev);
+
+    // Dot
+    const dot = document.createElement('button');
+    dot.className = 'slide-dot' + (i === slideIdx ? ' active' : '');
+    dot.onclick = () => goSlide(i);
+    dots.appendChild(dot);
+
+    // Thumbnail grid
+    const thumb = document.createElement('div');
+    thumb.className = 'photo-thumb';
+    const captionText = p.caption ? p.caption : '';
+    thumb.innerHTML = '<img src="' + p.photo_url + '" alt="' + captionText + '" title="' + captionText + '"/>' +
+      (IS_ADMIN
+        ? '<div class="photo-admin-bar">' +
+            '<button class="photo-admin-btn edit-cap" title="Edit caption" onclick="event.stopPropagation();editPhotoCaption(' + p.id + ',' + MEM_ID + ',this)"><i class="fas fa-pen"></i></button>' +
+            '<button class="photo-admin-btn del-photo" title="Delete photo" onclick="event.stopPropagation();deletePhoto(' + p.id + ',' + MEM_ID + ',this)"><i class="fas fa-trash"></i></button>' +
+          '</div>'
+        : '') +
+      (captionText ? '<div class="photo-caption-label">' + captionText + '</div>' : '');
+    thumb.querySelector('img').onclick = () => openLightbox(p.photo_url, p.caption);
+    grid.appendChild(thumb);
+  });
+
+  updateSlideCounter();
+  document.getElementById('statPhotos').textContent = PHOTOS.length;
+}
+
+function goSlide(n) {
+  const slides = document.querySelectorAll('.slide');
+  const dotEls = document.querySelectorAll('.slide-dot');
+  if (!slides.length) return;
+  slides[slideIdx].classList.remove('active');
+  dotEls[slideIdx]?.classList.remove('active');
+  slideIdx = (n + slides.length) % slides.length;
+  slides[slideIdx].classList.add('active');
+  dotEls[slideIdx]?.classList.add('active');
+  updateSlideCounter();
+}
+
+function slideNav(dir) { goSlide(slideIdx + dir); }
+
+function updateSlideCounter() {
+  const slides = document.querySelectorAll('.slide');
+  document.getElementById('slideCount').textContent = (slideIdx + 1) + ' / ' + slides.length;
+}
+
+// Auto-advance slideshow every 5 seconds
+setInterval(() => {
+  const slides = document.querySelectorAll('.slide');
+  if (slides.length > 1) goSlide(slideIdx + 1);
+}, 5000);
+
+// ── PHOTO UPLOAD ──────────────────────────────────────────────────────────────
+function onDragOver(e) { e.preventDefault(); document.getElementById('photoDropZone').classList.add('drag-over'); }
+function onDragLeave()  { document.getElementById('photoDropZone').classList.remove('drag-over'); }
+function onDrop(e)      { e.preventDefault(); onDragLeave(); uploadFiles(e.dataTransfer.files); }
+function onFilesSelected(input) { uploadFiles(input.files); input.value = ''; }
+
+async function uploadFiles(files) {
+  if (!files || !files.length) return;
+  const status = document.getElementById('uploadStatus');
+  let uploaded = 0;
+  for (const file of Array.from(files)) {
+    if (!file.type.startsWith('image/')) { showToast('⚠️ Only images are accepted.'); continue; }
+    if (file.size > 5 * 1024 * 1024) { showToast('⚠️ ' + file.name + ' exceeds 5 MB.'); continue; }
+
+    status.textContent = 'Uploading ' + file.name + '…';
+    const fd = new FormData();
+    fd.append('photo', file);
+    try {
+      const res = await fetch(API_BASE + '/memorials/' + MEM_ID + '/photos', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.success) { PHOTOS.push(data.photo); uploaded++; }
+      else showToast('❌ ' + (data.message || 'Upload failed.'));
+    } catch(e) { showToast('❌ Network error during upload.'); }
+  }
+  status.textContent = '';
+  if (uploaded) { slideIdx = 0; renderPhotos(); updateStats(); showToast('✅ ' + uploaded + ' photo(s) added!'); }
+}
+
+// ── CANDLE ────────────────────────────────────────────────────────────────────
+async function lightCandle() {
+  // Must be logged in to light candle (check validated tokens, not raw strings)
+  if (!IS_CLIENT && !IS_ADMIN) {
+    showToast('⚠️ Please sign in to light a candle.');
+    showGate();
+    return;
+  }
+  const btn = document.querySelector('.candle-big');
+  btn.querySelector('.flame').style.transform = 'scale(1.5)';
+  btn.style.pointerEvents = 'none';
+  setTimeout(() => { btn.querySelector('.flame').style.transform = ''; btn.style.pointerEvents = ''; }, 800);
+  const { success, candles } = await apiFetch('/memorials/' + MEM_ID + '/candle', { method: 'POST' });
+  if (success) {
+    document.getElementById('statCandles').textContent = candles;
+    document.getElementById('candleCount').textContent = candles + ' candles lit';
+    showToast('🕯️ A candle has been lit in their memory.');
+  } else {
+    showToast('❌ Could not light candle. Please try again.');
+  }
+}
+
+// ── QR CODE ───────────────────────────────────────────────────
+let _memQRInstance = null;
+
+function buildMemorialQR(memId) {
+  const base = window.location.origin + window.location.pathname;
+  const url  = base + '?memorial=' + memId;
+  document.getElementById('memQRUrl').textContent = url;
+  const wrap = document.getElementById('memQRCode');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  if (typeof QRCode !== 'undefined') {
+    _memQRInstance = new QRCode(wrap, {
+      text: url, width: 180, height: 180,
+      colorDark: '#152039', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+}
+
+function downloadMemQR() {
+  const wrap  = document.getElementById('memQRCode');
+  const img   = wrap?.querySelector('img') || wrap?.querySelector('canvas');
+  if (!img) { showToast('QR not ready yet.'); return; }
+  const name  = (MEM_DATA?.name || 'memorial').replace(/\s+/g, '_');
+  const a     = document.createElement('a');
+  a.href      = img.tagName === 'CANVAS' ? img.toDataURL('image/png') : img.src;
+  a.download  = 'memorial_qr_' + name + '.png';
+  a.click();
+  showToast('✅ QR code downloaded!');
+}
+
+function copyMemQRLink() {
+  const url = document.getElementById('memQRUrl')?.textContent;
+  if (url) {
+    navigator.clipboard.writeText(url).then(() => showToast('📋 Memorial link copied!'));
+  }
+}
+
+// ── TRIBUTES ──────────────────────────────────────────────────────────────────
+function renderTributes() {
+  const list = document.getElementById('tributesList');
+  document.getElementById('tributeCount').textContent = '(' + TRIBUTES.length + ')';
+  document.getElementById('statTributes').textContent = TRIBUTES.length;
+  if (!TRIBUTES.length) {
+    list.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:0.85rem;text-align:center;padding:1.5rem 0;">No tributes yet. Be the first to leave one.</div>';
+    return;
+  }
+  list.innerHTML = TRIBUTES.map(t => {
+    const date = t.created_at ? new Date(t.created_at).toLocaleDateString('en-PH', {year:'numeric',month:'short',day:'numeric'}) : '';
+    const photoEl = t.photo_url ? `<img src="${t.photo_url}" class="tribute-photo-thumb" onclick="openLightbox('${t.photo_url}')"/>` : '';
+    return `<div class="tribute-card">
+      ${photoEl}
+      <div class="tribute-date">${date}</div>
+      <div>
+        <span class="tribute-author">${t.author_name}</span>
+        ${t.relation ? `<span class="tribute-relation">· ${t.relation}</span>` : ''}
+      </div>
+      <div class="tribute-msg">${t.message}</div>
+    </div>`;
+  }).join('');
+}
+
+function onTributePhotoSelected(input) {
+  tributePhoto = input.files[0] || null;
+  document.getElementById('tributePhotoName').textContent = tributePhoto ? tributePhoto.name : 'No file selected';
+}
+
+async function submitTribute() {
+  const name = document.getElementById('tributeName').value.trim();
+  const msg  = document.getElementById('tributeMsg').value.trim();
+  if (!name || !msg) { showToast('Please enter your name and message.'); return; }
+
+  const btn = document.querySelector('.tribute-form .btn-gold');
+  btn.disabled = true;
+  btn.textContent = 'Posting…';
+
+  const fd = new FormData();
+  fd.append('author_name', name);
+  fd.append('relation',    document.getElementById('tributeRelation').value);
+  fd.append('message',     msg);
+  if (tributePhoto) fd.append('photo', tributePhoto);
+
+  try {
+    const res  = await fetch(API_BASE + '/memorials/' + MEM_ID + '/tributes', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.success) {
+      TRIBUTES.unshift(data.tribute);
+      renderTributes();
+      updateStats();
+      ['tributeName','tributeMsg'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('tributeRelation').selectedIndex = 0;
+      document.getElementById('tributePhotoName').textContent = 'No file selected';
+      document.getElementById('tributePhotoInput').value = '';
+      tributePhoto = null;
+      showToast('✅ Tribute posted. Thank you for sharing.');
+    } else {
+      showToast('❌ ' + (data.message || 'Could not post tribute.'));
+    }
+  } catch(e) { showToast('❌ Network error.'); }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-heart me-2"></i>Post Tribute';
+}
+
+function updateStats() {
+  document.getElementById('statPhotos').textContent   = PHOTOS.length;
+  document.getElementById('statTributes').textContent = TRIBUTES.length;
+}
+
+// ── LIGHTBOX ──────────────────────────────────────────────────────────────────
+function openLightbox(src, caption) {
+  document.getElementById('lightboxImg').src = src;
+  const cap = document.getElementById('lightboxCaption');
+  if (cap) cap.textContent = caption || '';
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// ── ADMIN PHOTO MODERATION ────────────────────────────────────────────────────
+async function deletePhoto(photoId, memId, btnEl) {
+  if (!confirm('Delete this photo permanently? This cannot be undone.')) return;
+  btnEl.disabled = true;
+  const result = await apiFetch('/memorials/' + memId + '/photos/' + photoId, { method: 'DELETE' });
+  if (result.success) {
+    // Remove from PHOTOS array and re-render
+    PHOTOS = PHOTOS.filter(p => p.id !== photoId);
+    slideIdx = 0;
+    renderPhotos();
+    updateStats();
+    showToast('🗑️ Photo deleted.');
+  } else {
+    btnEl.disabled = false;
+    showToast('❌ ' + (result.message || 'Delete failed.'));
+  }
+}
+
+async function editPhotoCaption(photoId, memId, btnEl) {
+  const photo = PHOTOS.find(p => p.id === photoId);
+  const current = photo ? (photo.caption || '') : '';
+  const newCaption = prompt('Edit caption for this photo (leave blank to remove):', current);
+  if (newCaption === null) return; // cancelled
+  btnEl.disabled = true;
+  const result = await apiFetch('/memorials/' + memId + '/photos/' + photoId, {
+    method: 'PUT',
+    body: JSON.stringify({ caption: newCaption.trim() })
+  });
+  if (result.success) {
+    if (photo) photo.caption = newCaption.trim() || null;
+    renderPhotos();
+    showToast('✅ Caption updated.');
+  } else {
+    showToast('❌ ' + (result.message || 'Update failed.'));
+  }
+  btnEl.disabled = false;
+}
+
+// ══════════════════════════════════════════════════════════════
+// MEMORIAL VIDEO GENERATOR
+// Canvas API + MediaRecorder + Web Audio API
+// ══════════════════════════════════════════════════════════════
+let selectedMusicTrack = 'peaceful';
+let generatedVideoBlob = null;
+
+function selectMusic(el, track) {
+  document.querySelectorAll('.music-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedMusicTrack = track;
+}
+
+const MUSIC_TRACKS = {
+  peaceful: { name:'Peaceful Piano',  bpm:60, wave:'sine',     notes:[261.63,293.66,329.63,392.00,440.00,392.00,329.63,293.66,261.63,329.63,392.00,440.00,523.25,440.00,392.00,329.63], dur:1.0, gain:0.18, rev:0.4 },
+  gentle:   { name:'Gentle Strings',  bpm:55, wave:'triangle', notes:[220.00,246.94,261.63,293.66,329.63,293.66,261.63,246.94,220.00,261.63,293.66,329.63,369.99,329.63,293.66,261.63], dur:1.1, gain:0.14, rev:0.55 },
+  solemn:   { name:'Solemn Choir',    bpm:48, wave:'sine',     notes:[146.83,164.81,174.61,195.99,220.00,195.99,174.61,164.81,146.83,174.61,195.99,220.00,246.94,220.00,195.99,174.61], dur:1.3, gain:0.12, rev:0.65 },
+  warm:     { name:'Warm Acoustic',   bpm:70, wave:'triangle', notes:[196.00,220.00,246.94,261.63,293.66,261.63,246.94,220.00,196.00,246.94,293.66,329.63,369.99,329.63,293.66,246.94], dur:0.85,gain:0.16, rev:0.3 },
+  silence:  null
+};
+
+function buildMusicBuffer(track, durationSec) {
+  const actx   = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100 });
+  const sr     = actx.sampleRate;
+  const frames = Math.ceil(sr * durationSec);
+  const buf    = actx.createBuffer(2, frames, sr);
+  const L      = buf.getChannelData(0);
+  const R      = buf.getChannelData(1);
+  const notes  = track.notes, noteDur = track.dur, g = track.gain, wave = track.wave;
+  let f = 0, ni = 0;
+  while (f < frames) {
+    const freq = notes[ni % notes.length];
+    const nf   = Math.floor(sr * noteDur);
+    const atk  = Math.floor(sr * 0.08);
+    const rel  = Math.floor(nf * 0.3);
+    for (let i = 0; i < nf && f < frames; i++, f++) {
+      let env = 1.0;
+      if (i < atk) env = i / atk;
+      else if (i > nf - rel) env = (nf - i) / rel;
+      const t = f / sr;
+      let s = wave === 'sine'
+        ? Math.sin(2 * Math.PI * freq * t)
+        : (2/Math.PI) * Math.asin(Math.sin(2 * Math.PI * freq * t));
+      s += 0.3 * Math.sin(4 * Math.PI * freq * t) + 0.1 * Math.sin(6 * Math.PI * freq * t);
+      const v = s * g * env;
+      const spread = Math.sin(2 * Math.PI * 0.25 * t) * 0.2;
+      L[f] = v * (0.8 + spread);
+      R[f] = v * (0.8 - spread);
+    }
+    ni++;
+  }
+  const dly = Math.floor(sr * 0.12);
+  for (let i = dly; i < frames; i++) { L[i] += L[i-dly] * track.rev * 0.4; R[i] += R[i-dly] * track.rev * 0.4; }
+  return { actx, buf };
+}
+
+function drawFrame(ctx, W, H, img, memName, memYears, caption, progress, total, idx) {
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#0d1929'); bg.addColorStop(1, '#1a2540');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  if (img && img.complete && img.naturalWidth) {
+    const PAD = 60, PH = H - 160, PW = W - PAD * 2;
+    const ia  = img.naturalWidth / img.naturalHeight;
+    let dW, dH;
+    if (ia > PW / PH) { dW = PW; dH = PW / ia; } else { dH = PH; dW = PH * ia; }
+    const dX = (W - dW) / 2, dY = 40 + (PH - dH) / 2;
+    ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 8;
+    ctx.drawImage(img, dX, dY, dW, dH);
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+    ctx.strokeStyle = 'rgba(184,151,58,0.6)'; ctx.lineWidth = 2;
+    ctx.strokeRect(dX, dY, dW, dH);
+  }
+  const ov = ctx.createLinearGradient(0, H-130, 0, H);
+  ov.addColorStop(0,'rgba(13,25,41,0)'); ov.addColorStop(1,'rgba(13,25,41,0.95)');
+  ctx.fillStyle = ov; ctx.fillRect(0, H-130, W, 130);
+  ctx.strokeStyle = 'rgba(184,151,58,0.4)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(W*0.15, H-100); ctx.lineTo(W*0.85, H-100); ctx.stroke();
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#d4af62'; ctx.font = `bold ${Math.floor(W*0.036)}px Georgia,serif`;
+  ctx.fillText(memName, W/2, H-68);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = `${Math.floor(W*0.021)}px Arial,sans-serif`;
+  ctx.fillText(memYears, W/2, H-46);
+  if (caption) {
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = `italic ${Math.floor(W*0.018)}px Georgia,serif`;
+    ctx.fillText(caption.length>60 ? caption.slice(0,57)+'…' : caption, W/2, H-25);
+  }
+  if (total > 1) {
+    const r=4, gap=14, tw = total*(r*2)+(total-1)*(gap-r*2);
+    let dx = W/2 - tw/2;
+    for (let i=0;i<total;i++) {
+      ctx.beginPath(); ctx.arc(dx+r, H-11, r, 0, Math.PI*2);
+      ctx.fillStyle = i===idx ? '#d4af62' : 'rgba(255,255,255,0.2)'; ctx.fill(); dx+=gap;
+    }
+  }
+  ctx.font=`${Math.floor(W*0.032)}px serif`; ctx.textAlign='left'; ctx.fillText('🕯️',16,40);
+  ctx.fillStyle='rgba(184,151,58,0.5)'; ctx.font=`italic ${Math.floor(W*0.017)}px Georgia,serif`;
+  ctx.textAlign='right'; ctx.fillText('In Loving Memory', W-16, 34);
+  ctx.fillStyle='rgba(255,255,255,0.07)'; ctx.fillRect(0, H-3, W, 3);
+  ctx.fillStyle='rgba(184,151,58,0.7)';  ctx.fillRect(0, H-3, W*progress, 3);
+}
+
+async function generateMemorialVideo() {
+  if (!PHOTOS || PHOTOS.length === 0) {
+    showToast('⚠️ No photos on this memorial yet. Family members can upload photos to create a video.'); return;
+  }
+  const btn    = document.getElementById('btnGenerateVideo');
+  const dlBtn  = document.getElementById('btnDownloadVideo');
+  const pwrap  = document.getElementById('videoProgressWrap');
+  const pfill  = document.getElementById('videoProgressFill');
+  const pstat  = document.getElementById('videoGenStatus');
+  const pvwrap = document.getElementById('videoPreviewWrap');
+  const rdymsg = document.getElementById('videoReadyMsg');
+  const videoEl= document.getElementById('videoPreview');
+  btn.disabled  = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Generating…';
+  dlBtn.style.display = 'none'; pvwrap.style.display = 'none';
+  rdymsg.style.display = 'none'; pwrap.style.display = 'block'; pfill.style.width = '0%';
+  const prog = (p, m) => { pfill.style.width = p+'%'; if(m) pstat.textContent = m; };
+
+  try {
+    prog(5, 'Loading photos…');
+    const imgs = await Promise.all(PHOTOS.map(p => new Promise(res => {
+      const img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = () => res(img); img.onerror = () => res(null);
+      img.src = p.photo_url;
+    })));
+    const valid = imgs.filter(Boolean);
+    if (!valid.length) { showToast('❌ Could not load photos.'); return; }
+
+    prog(12, 'Setting up canvas…');
+    const W = 1280, H = 720;
+    const cvs = document.createElement('canvas');
+    cvs.width = W; cvs.height = H;
+    const ctx = cvs.getContext('2d');
+    const SPC = 4.5, TRC = 0.8;
+    const totalDur = valid.length * SPC + TRC;
+    const FPS = 24, totalFrames = Math.ceil(totalDur * FPS);
+
+    const memName  = MEM_DATA?.name || 'In Loving Memory';
+    const born     = MEM_DATA?.born ? new Date(MEM_DATA.born).getFullYear() : '';
+    const died     = MEM_DATA?.died ? new Date(MEM_DATA.died).getFullYear() : '';
+    const memYears = born && died ? born+' – '+died : (born||died||'');
+
+    prog(20, 'Composing background music…');
+    const track = MUSIC_TRACKS[selectedMusicTrack];
+    let musicActx = null, audioDest = null, audioSrc = null, gainNd = null;
+    if (track) {
+      const { actx, buf } = buildMusicBuffer(track, totalDur + 1);
+      musicActx = actx;
+      audioDest = actx.createMediaStreamDestination();
+      gainNd    = actx.createGain();
+      gainNd.gain.setValueAtTime(1.0, 0);
+      gainNd.gain.setValueAtTime(1.0, Math.max(0, totalDur - 2));
+      gainNd.gain.linearRampToValueAtTime(0, totalDur);
+      gainNd.connect(audioDest);
+      audioSrc = actx.createBufferSource();
+      audioSrc.buffer = buf;
+      audioSrc.connect(gainNd);
+    }
+
+    prog(25, 'Starting recorder…');
+    const cStream = cvs.captureStream(FPS);
+    const allTracks = [...cStream.getTracks()];
+    if (audioDest) audioDest.stream.getTracks().forEach(t => allTracks.push(t));
+    const stream = new MediaStream(allTracks);
+    const types  = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm;codecs=vp9','video/webm'];
+    let mime = 'video/webm';
+    for (const t of types) { if (MediaRecorder.isTypeSupported(t)) { mime = t; break; } }
+    const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 4_000_000 });
+    const chunks = [];
+    rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    rec.start(200);
+    if (audioSrc) audioSrc.start(0);
+
+    prog(30, 'Rendering frames…');
+    const delay = ms => new Promise(r => setTimeout(r, ms));
+    for (let f = 0; f < totalFrames; f++) {
+      const t   = f / FPS;
+      const pf  = t / SPC;
+      const pi  = Math.min(Math.floor(pf), valid.length - 1);
+      const ni  = Math.min(pi + 1, valid.length - 1);
+      const it  = pf - pi;
+      const alpha = it > (1 - TRC / SPC) ? (it - (1 - TRC / SPC)) / (TRC / SPC) : 0;
+      const ovr = f / totalFrames;
+      const cap = PHOTOS[pi]?.caption || '';
+      drawFrame(ctx, W, H, valid[pi], memName, memYears, cap, ovr, valid.length, pi);
+      if (alpha > 0 && ni !== pi) {
+        const oc = document.createElement('canvas'); oc.width=W; oc.height=H;
+        const ox = oc.getContext('2d');
+        drawFrame(ox, W, H, valid[ni], memName, memYears, PHOTOS[ni]?.caption||'', ovr, valid.length, ni);
+        ctx.globalAlpha = alpha; ctx.drawImage(oc, 0, 0); ctx.globalAlpha = 1.0;
+      }
+      if (f % 10 === 0) prog(30 + Math.floor(ovr * 60), `Frame ${f+1} / ${totalFrames}…`);
+      await delay(1000 / FPS);
+    }
+
+    prog(92, 'Finalising…');
+    rec.stop();
+    if (audioSrc)  { try { audioSrc.stop(); } catch(e) {} }
+    if (musicActx) { try { musicActx.close(); } catch(e) {} }
+    await new Promise(r => { rec.onstop = r; });
+    generatedVideoBlob = new Blob(chunks, { type: mime });
+    videoEl.src        = URL.createObjectURL(generatedVideoBlob);
+    pvwrap.style.display  = 'block';
+    dlBtn.style.display   = 'inline-flex';
+    rdymsg.style.display  = 'block';
+    prog(100, 'Done!');
+    showToast('🎬 Memorial video generated! Preview or download below.');
+  } catch(err) {
+    console.error('Video error:', err);
+    showToast('❌ Video generation failed: ' + err.message);
+    prog(0, ''); pwrap.style.display = 'none';
+  } finally {
+    btn.disabled  = false;
+    btn.innerHTML = '<i class="fas fa-magic me-1"></i>Generate Memorial Video';
+  }
+}
+
+function downloadMemorialVideo() {
+  if (!generatedVideoBlob) return;
+  const name = (MEM_DATA?.name || 'memorial').replace(/\s+/g,'_');
+  const ext  = generatedVideoBlob.type.includes('webm') ? 'webm' : 'mp4';
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(generatedVideoBlob);
+  a.download = `memorial_${name}.${ext}`;
+  a.click();
+  showToast('📥 Downloading your memorial video…');
+}
+
+</script>
