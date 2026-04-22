@@ -1,0 +1,6 @@
+# Railway build configuration
+[phases.install]
+cmds = ["cd backend && npm install"]
+
+[start]
+cmd = "node backend/server.js"
