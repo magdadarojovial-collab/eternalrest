@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Eternal Rest – Staff Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #1c2b4a;
+      --navy-dark: #131f35;
+      --gold:      #b8973a;
+      --gold-pale: #fef9ef;
+      --white:     #ffffff;
+      --cream:     #f8f5f0;
+      --muted:     #8a8073;
+      --border:    #e4ddd0;
+      --danger:    #c0392b;
+      --success:   #27ae60;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--navy-dark);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative background */
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 80%, rgba(184,151,58,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 20%, rgba(184,151,58,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .login-wrapper {
+      width: 100%;
+      max-width: 440px;
+      padding: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Brand header */
+    .brand {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .brand-icon {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, var(--gold), #8a6e28);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 1.8rem;
+      color: #fff;
+      box-shadow: 0 8px 32px rgba(184,151,58,0.35);
+    }
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      color: var(--white);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .brand-sub {
+      font-size: 0.78rem;
+      color: var(--gold);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 0.25rem;
+    }
+
+    /* Card */
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+    }
+
+    .card-header {
+      background: var(--navy);
+      padding: 1.4rem 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    .card-header i { color: var(--gold); font-size: 1rem; }
+    .card-header span {
+      color: rgba(255,255,255,0.9);
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .card-body { padding: 2rem 1.8rem; }
+
+    /* Form */
+    .form-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.45rem;
+    }
+    .form-group { margin-bottom: 1.2rem; position: relative; }
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      color: var(--navy);
+      background: #fafafa;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(184,151,58,0.12);
+      background: #fff;
+    }
+    .input-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+    .form-input.has-icon { padding-left: 2.4rem; }
+
+    /* Password toggle */
+    .pw-toggle {
+      position: absolute;
+      right: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0;
+      line-height: 1;
+    }
+    .pw-toggle:hover { color: var(--navy); }
+
+    /* Alerts */
+    .alert {
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      font-size: 0.83rem;
+      margin-bottom: 1.2rem;
+      display: none;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .alert-error   { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%;
+      padding: 0.85rem;
+      background: linear-gradient(135deg, var(--gold), #9a7d2e);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: opacity 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-submit:hover   { opacity: 0.92; }
+    .btn-submit:active  { transform: scale(0.98); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Role badge shown after detecting role */
+    .role-badge {
+      display: none;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--gold-pale);
+      border: 1.5px solid var(--gold);
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      font-size: 0.83rem;
+      color: var(--navy);
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+    }
+    .role-badge i { color: var(--gold); }
+
+    /* Redirect screen */
+    .redirect-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.8rem;
+      text-align: center;
+      gap: 1rem;
+    }
+    .redirect-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(184,151,58,0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .redirect-text { font-weight: 600; color: var(--navy); font-size: 1rem; }
+    .redirect-sub  { font-size: 0.8rem; color: var(--muted); }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.73rem;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.5px;
+    }
+    .footer a {
+      color: rgba(184,151,58,0.6);
+      text-decoration: none;
+    }
+    .footer a:hover { color: var(--gold); }
+
+    /* Back to public site */
+    .back-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: rgba(184,151,58,0.7); }
+  </style>
+</head>
+<body>
+
+<div class="login-wrapper">
+
+  <!-- Brand -->
+  <div class="brand">
+    <div class="brand-icon"><i class="fas fa-dove"></i></div>
+    <div class="brand-name">Eternal Rest</div>
+    <div class="brand-sub">Staff Portal</div>
+  </div>
+
+  <!-- Login card -->
+  <div class="card">
+
+    <div class="card-header">
+      <i class="fas fa-shield-alt"></i>
+      <span>Secure Staff Login — Administrators &amp; Super Admin</span>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Error alert -->
+      <div class="alert alert-error" id="alertError">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="alertErrorMsg">Invalid credentials.</span>
+      </div>
+
+      <!-- Access denied alert (wrong role) -->
+      <div class="alert alert-warning" id="alertDenied">
+        <i class="fas fa-ban"></i>
+        <span>This portal is for staff only. Please use the public site for reservations.</span>
+      </div>
+
+      <!-- Role detected badge (shown briefly before redirect) -->
+      <div class="role-badge" id="roleBadge">
+        <i class="fas fa-check-circle"></i>
+        <span id="roleBadgeText">Logged in as Administrator</span>
+      </div>
+
+      <!-- Login form -->
+      <div id="loginForm">
+        <div class="form-group">
+          <label class="form-label">Username or Email</label>
+          <i class="fas fa-user input-icon"></i>
+          <input type="text" class="form-input has-icon" id="inputUser"
+            placeholder="Enter your username"
+            autocomplete="username"
+            onkeydown="if(event.key==='Enter')doLogin()"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" class="form-input has-icon" id="inputPass"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            style="padding-right:2.8rem;"
+            onkeydown="if(event.key==='Enter')doLogin()"/>
+          <button class="pw-toggle" type="button" onclick="togglePw()" id="pwToggleBtn">
+            <i class="fas fa-eye" id="pwToggleIcon"></i>
+          </button>
+        </div>
+        <button class="btn-submit" id="btnLogin" onclick="doLogin()">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+      </div>
+
+      <!-- Redirect spinner (shown after successful login) -->
+      <div class="redirect-screen" id="redirectScreen">
+        <div class="redirect-spinner"></div>
+        <div class="redirect-text" id="redirectText">Signing you in…</div>
+        <div class="redirect-sub" id="redirectSub">Redirecting to your panel…</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Back link -->
+  <a href="index.html" class="back-link">
+    <i class="fas fa-arrow-left"></i> Back to Public Site
+  </a>
+
+  <div class="footer">
+    &copy; 2026 Eternal Rest Funeral Services &nbsp;·&nbsp;
+    <a href="index.html">Public Site</a>
+  </div>
+
+</div>
+
+<script>
+// ── API BASE: auto-detects localhost vs live hosting ──────────
+const API_BASE = (() => {
+  const { protocol, hostname, port } = window.location;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return `${protocol}//${hostname}:3000/api`;
+  }
+  return `${protocol}//${hostname}${port ? ':'+port : ''}/api`;
+})();
+
+// ── Helpers ────────────────────────────────────────────────────
+function show(id)  { document.getElementById(id).style.display = 'flex'; }
+function hide(id)  { document.getElementById(id).style.display = 'none'; }
+function text(id, t) { document.getElementById(id).textContent = t; }
+
+function togglePw() {
+  const inp  = document.getElementById('inputPass');
+  const icon = document.getElementById('pwToggleIcon');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.className = 'fas fa-eye-slash';
+  } else {
+    inp.type = 'password';
+    icon.className = 'fas fa-eye';
+  }
+}
+
+// ── Role → panel mapping ───────────────────────────────────────
+const PANEL = {
+  superadmin: 'superadmin.html',
+  admin:      'admin.html',
+  staff:      'admin.html',
+};
+const ROLE_LABEL = {
+  superadmin: '👑 Super Administrator',
+  admin:      '🏢 Branch Administrator',
+  staff:      '👤 Staff Member',
+};
+
+// ── Main login function ────────────────────────────────────────
+async function doLogin() {
+  const username = document.getElementById('inputUser').value.trim();
+  const password = document.getElementById('inputPass').value;
+
+  hide('alertError');
+  hide('alertDenied');
+  hide('roleBadge');
+
+  if (!username || !password) {
+    text('alertErrorMsg', 'Please enter your username and password.');
+    show('alertError');
+    return;
+  }
+
+  // Disable button while logging in
+  const btn = document.getElementById('btnLogin');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
+
+  try {
+    const res  = await fetch(API_BASE + '/auth/login', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      text('alertErrorMsg', data.message || 'Invalid credentials. Please try again.');
+      show('alertError');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+      document.getElementById('inputPass').value = '';
+      return;
+    }
+
+    const { role } = data.user;
+
+    // Only allow staff roles — not public clients
+    if (!PANEL[role]) {
+      show('alertDenied');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+      document.getElementById('inputPass').value = '';
+      return;
+    }
+
+    // ── Success: store token, show redirect screen ─────────────
+    localStorage.setItem('er_admin_token', data.token);
+
+    // Show role badge briefly
+    text('roleBadgeText', `${ROLE_LABEL[role] || role} — redirecting…`);
+    show('roleBadge');
+
+    // Switch to redirect spinner
+    hide('loginForm');
+    const screen = document.getElementById('redirectScreen');
+    screen.style.display = 'flex';
+
+    const panel = PANEL[role];
+    text('redirectText',
+      role === 'superadmin' ? 'Welcome, Super Admin!' :
+      role === 'admin'      ? `Welcome, ${data.user.fname}!` :
+                              `Welcome, ${data.user.fname}!`
+    );
+    text('redirectSub',
+      role === 'superadmin' ? 'Opening Super Admin panel…' :
+      role === 'admin'      ? `Opening ${data.user.branch_name || 'Branch'} Admin panel…` :
+                              'Opening Staff panel…'
+    );
+
+    // Redirect after a short pause so the user sees the welcome message
+    setTimeout(() => {
+      window.location.href = panel;
+    }, 900);
+
+  } catch (err) {
+    text('alertErrorMsg', 'Cannot connect to server. Please check your connection or contact support.');
+    show('alertError');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+  }
+}
+
+// ── Auto-login: if token already in localStorage, redirect ────
+(async () => {
+  const token = localStorage.getItem('er_admin_token');
+  if (!token) return;
+
+  try {
+    const res  = await fetch(API_BASE + '/auth/me', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (data.success && PANEL[data.user.role]) {
+      // Valid session — redirect directly without showing login form
+      hide('loginForm');
+      const screen = document.getElementById('redirectScreen');
+      screen.style.display = 'flex';
+      text('redirectText', `Welcome back, ${data.user.fname}!`);
+      text('redirectSub', 'Resuming your session…');
+      setTimeout(() => {
+        window.location.href = PANEL[data.user.role];
+      }, 600);
+    }
+  } catch (e) {
+    // Token invalid / server unreachable — just show the form normally
+    localStorage.removeItem('er_admin_token');
+  }
+})();
+</script>
+</body>
+</html>

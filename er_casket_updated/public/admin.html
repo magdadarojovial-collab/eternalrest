@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Eternal Rest – Admin Panel</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#1c2b4a;--navy-dark:#152039;--navy-light:#253560;
+  --gold:#b8973a;--gold-light:#d4af62;--gold-pale:#f5edd8;
+  --cream:#faf8f3;--white:#fff;--text:#2d3142;--muted:#6b7280;
+  --border:#e4ddd0;--sidebar-w:260px;
+  --success:#4a7c59;--danger:#c0392b;--warning:#d97706;--info:#2980b9;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Lato',sans-serif;background:#f0f2f5;color:var(--text);display:flex;min-height:100vh;}
+
+/* LOGIN */
+.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--navy-dark),var(--navy));display:flex;align-items:center;justify-content:center;z-index:9999;}
+.login-box{background:var(--white);border-radius:14px;padding:2.5rem;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.login-logo{text-align:center;margin-bottom:2rem;}
+.login-logo .icon{width:70px;height:70px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--white);font-size:1.8rem;margin:0 auto 1rem;}
+.login-logo h4{font-family:'Playfair Display',serif;color:var(--navy);font-size:1.5rem;}
+.login-logo p{font-size:0.8rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.login-role-badge{display:inline-flex;align-items:center;gap:0.5rem;background:var(--gold-pale);border:1.5px solid var(--gold);color:var(--gold);border-radius:20px;padding:0.4rem 1rem;font-size:0.78rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:1.5rem;}
+.form-ctrl{border:1.5px solid var(--border);border-radius:6px;padding:0.65rem 1rem;font-size:0.9rem;width:100%;outline:none;font-family:'Lato';transition:border 0.2s;background:var(--cream);}
+.form-ctrl:focus{border-color:var(--gold);background:var(--white);}
+.form-label-c{font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy);margin-bottom:0.4rem;display:block;}
+.btn-login{background:var(--gold);color:var(--white);border:none;border-radius:6px;padding:0.75rem;font-size:0.88rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;width:100%;cursor:pointer;transition:background 0.2s;}
+.btn-login:hover{background:var(--gold-light);}
+.login-access-denied{display:none;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;border-radius:8px;padding:1rem;text-align:center;margin-bottom:1rem;}
+.login-access-denied i{font-size:1.4rem;display:block;margin-bottom:0.4rem;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--navy-dark);min-height:100vh;position:fixed;left:0;top:0;z-index:100;display:flex;flex-direction:column;transition:transform 0.3s;}
+.sidebar.collapsed{transform:translateX(-260px);}
+.sidebar-head{padding:1.5rem;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sidebar-logo{display:flex;align-items:center;gap:10px;}
+.s-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--white);font-size:1rem;}
+.s-name{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold-light);}
+.s-role{font-size:0.65rem;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;}
+.sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto;}
+.nav-section-label{font-size:0.62rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:0.8rem 1.3rem 0.3rem;}
+.nav-item-s{display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1.3rem;color:rgba(255,255,255,0.6);font-size:0.85rem;font-weight:400;cursor:pointer;transition:all 0.2s;border-left:3px solid transparent;text-decoration:none;}
+.nav-item-s:hover,.nav-item-s.active{background:rgba(255,255,255,0.05);color:var(--white);border-left-color:var(--gold);}
+.nav-item-s.active{color:var(--gold-light);}
+.nav-item-s i{width:18px;text-align:center;font-size:0.9rem;}
+.nav-badge{background:var(--gold);color:var(--white);font-size:0.62rem;padding:0.15rem 0.5rem;border-radius:10px;margin-left:auto;font-weight:700;}
+.sidebar-user{padding:1rem 1.3rem;border-top:1px solid rgba(255,255,255,0.08);}
+.user-card{display:flex;align-items:center;gap:0.8rem;}
+.user-av{width:36px;height:36px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:var(--white);font-size:0.85rem;font-weight:700;flex-shrink:0;}
+.user-name{font-size:0.82rem;color:var(--white);font-weight:700;}
+.user-role-tag{font-size:0.67rem;color:var(--gold-light);letter-spacing:1px;}
+
+/* MAIN */
+.main-area{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;transition:margin 0.3s;}
+.main-area.expanded{margin-left:0;}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.toggle-btn{background:none;border:1.5px solid var(--border);border-radius:6px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--navy);transition:all 0.2s;}
+.toggle-btn:hover{background:var(--cream);border-color:var(--gold);}
+.page-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--navy);font-weight:700;}
+.topbar-actions{display:flex;align-items:center;gap:0.8rem;}
+.notif-btn{background:none;border:1.5px solid var(--border);border-radius:6px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--navy);position:relative;}
+.notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--danger);border-radius:50%;border:2px solid var(--white);}
+.main-content{padding:1.5rem;flex:1;}
+
+/* STAT CARDS */
+.stat-card{background:var(--white);border-radius:10px;padding:1.4rem;border:1px solid var(--border);transition:all 0.2s;}
+.stat-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.08);transform:translateY(-2px);}
+.stat-num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;line-height:1;}
+.stat-label{font-size:0.78rem;color:var(--muted);margin-top:0.3rem;letter-spacing:0.5px;}
+.stat-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+.stat-change{font-size:0.75rem;font-weight:700;margin-top:0.5rem;}
+.stat-change.up{color:var(--success);}
+.stat-change.down{color:var(--danger);}
+
+/* TABLES */
+.data-table{background:var(--white);border-radius:10px;border:1px solid var(--border);overflow:hidden;}
+.table-head{padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;}
+.table-head h6{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--navy);font-weight:700;margin:0;}
+.table thead th{background:var(--cream);font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy);border-bottom:2px solid var(--border);padding:0.75rem 1rem;white-space:nowrap;}
+.table tbody td{font-size:0.85rem;color:var(--text);padding:0.75rem 1rem;vertical-align:middle;border-bottom:1px solid #f3ede3;}
+.table tbody tr:hover td{background:#faf7f0;}
+.badge-status{font-size:0.7rem;font-weight:700;padding:0.3rem 0.7rem;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;}
+.badge-available{background:#d1fae5;color:#065f46;}
+.badge-reserved{background:#fee2e2;color:#991b1b;}
+.badge-limited{background:#fef3c7;color:#92400e;}
+.badge-pending{background:#dbeafe;color:#1e40af;}
+.badge-confirmed{background:#d1fae5;color:#065f46;}
+.badge-cancelled{background:#fee2e2;color:#991b1b;}
+.badge-completed{background:#ede9fe;color:#5b21b6;}
+.badge-admin{background:rgba(184,151,58,0.15);color:var(--gold);}
+.badge-staff{background:#dbeafe;color:#1e40af;}
+
+/* ACTION BTNS */
+.btn-action{border:none;border-radius:5px;padding:0.3rem 0.7rem;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:0.3px;}
+.btn-edit{background:#dbeafe;color:#1e40af;}
+.btn-edit:hover{background:#bfdbfe;}
+.btn-delete{background:#fee2e2;color:#991b1b;}
+.btn-delete:hover{background:#fecaca;}
+.btn-view2{background:var(--gold-pale);color:var(--gold);}
+.btn-view2:hover{background:#eddfc0;}
+
+/* CARD */
+.info-card{background:var(--white);border-radius:10px;border:1px solid var(--border);padding:1.3rem;}
+.info-card h6{font-family:'Playfair Display',serif;font-size:1rem;color:var(--navy);margin-bottom:1rem;}
+
+/* MODAL */
+.modal-content{border-radius:10px;border:none;}
+.modal-header-c{background:var(--navy);color:var(--white);padding:1.2rem 1.5rem;border:none;}
+.modal-header-c h5{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1.3rem;margin:0;}
+
+/* PAGE SECTIONS */
+.page-section{display:none;}
+.page-section.active{display:block;}
+
+/* PROGRESS */
+.progress-custom{height:8px;border-radius:4px;background:var(--border);}
+.progress-bar-custom{height:100%;border-radius:4px;background:linear-gradient(to right,var(--gold),var(--gold-light));transition:width 0.8s;}
+
+/* CALENDAR */
+.cal-event{font-size:0.75rem;background:var(--gold-pale);border:1px solid var(--gold);border-radius:4px;padding:0.2rem 0.5rem;color:var(--gold);margin-bottom:0.3rem;cursor:pointer;}
+
+/* TOAST */
+.toast-admin{background:var(--navy);border:1px solid var(--gold);color:var(--white);border-radius:8px;}
+
+
+/* PHOTO MODERATION */
+.photo-mod-card{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:all 0.2s;}
+.photo-mod-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1);}
+.photo-mod-img{width:100%;aspect-ratio:4/3;object-fit:cover;cursor:pointer;display:block;}
+.photo-mod-body{padding:0.75rem;}
+.photo-mod-meta{font-size:0.72rem;color:var(--muted);margin-bottom:0.4rem;}
+.photo-mod-memorial{font-size:0.8rem;font-weight:700;color:var(--navy);margin-bottom:0.2rem;}
+.photo-mod-caption{font-size:0.78rem;color:var(--text);font-style:italic;margin-bottom:0.5rem;min-height:1.2rem;}
+.photo-mod-actions{display:flex;gap:0.4rem;}
+/* QR */
+.qr-preview-wrap{background:#fff;border-radius:10px;padding:1rem;display:inline-block;box-shadow:0 2px 12px rgba(0,0,0,0.1);}
+.qr-preview-wrap canvas,.qr-preview-wrap img{display:block;}
+.btn-qr-admin{background:var(--gold-pale);color:var(--gold);border:none;border-radius:5px;padding:0.3rem 0.7rem;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:0.3px;}
+.btn-qr-admin:hover{background:#eddfc0;}
+.admin-qr-url{font-family:monospace;font-size:0.72rem;color:var(--muted);word-break:break-all;background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:0.4rem 0.6rem;margin-top:0.5rem;}
+
+/* Photo uploader */
+.photo-drop-zone{border:2px dashed var(--border);border-radius:10px;cursor:pointer;transition:all 0.2s;background:var(--cream);position:relative;overflow:hidden;min-height:110px;display:flex;align-items:center;justify-content:center;}
+.photo-drop-zone:hover,.photo-drop-zone.drag-over{border-color:var(--gold);background:var(--gold-pale);}
+.photo-drop-zone.has-photo{border:2px solid var(--gold);background:#fff;padding:0;min-height:0;}
+.photo-drop-zone img.photo-preview{width:100%;max-height:200px;object-fit:cover;border-radius:8px;display:block;}
+.drop-placeholder{display:flex;flex-direction:column;align-items:center;gap:0.4rem;color:var(--muted);padding:1.2rem;}
+.drop-placeholder i{font-size:2rem;color:var(--gold);}
+.drop-placeholder .dp-title{font-size:0.84rem;font-weight:700;color:var(--navy);}
+.drop-placeholder small{font-size:0.72rem;}
+.photo-actions{display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap;}
+.btn-photo-remove{background:#fee2e2;color:#991b1b;border:none;border-radius:5px;padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;cursor:pointer;transition:background 0.2s;}
+.btn-photo-remove:hover{background:#fecaca;}
+.btn-photo-change{background:var(--gold-pale);color:var(--gold);border:none;border-radius:5px;padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;cursor:pointer;transition:background 0.2s;}
+.btn-photo-change:hover{background:#eddfc0;}
+.casket-thumb{width:46px;height:46px;border-radius:6px;object-fit:cover;border:1.5px solid var(--border);}
+.casket-thumb-placeholder{width:46px;height:46px;border-radius:6px;background:var(--cream);border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1.1rem;}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-260px);}
+  .sidebar.open{transform:translateX(0);}
+  .main-area{margin-left:0;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ─────────────────────────────────────────────────────────── -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="icon"><i class="fas fa-user-tie"></i></div>
+      <h4>Eternal Rest</h4>
+      <p>Admin Portal</p>
+    </div>
+
+    <!-- Access-denied message (shown if wrong role logs in) -->
+    <div class="login-access-denied" id="accessDenied">
+      <i class="fas fa-shield-alt"></i>
+      <strong>Access Denied</strong>
+      <div style="font-size:0.82rem;margin-top:0.3rem;">Your account does not have admin privileges. Please contact your Super Administrator.</div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label-c">Username</label>
+      <input type="text" class="form-ctrl" id="loginUser" placeholder="e.g. jdelacruz" autocomplete="username"/>
+    </div>
+    <div class="mb-3">
+      <label class="form-label-c">Password</label>
+      <div class="position-relative">
+        <input type="password" class="form-ctrl" id="loginPass" placeholder="Enter your password" style="padding-right:2.5rem;" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+        <button onclick="togglePass()" style="position:absolute;right:0.8rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;"><i class="fas fa-eye" id="passEye"></i></button>
+      </div>
+    </div>
+    <div id="loginError" style="display:none;background:#fee2e2;color:#991b1b;border-radius:6px;padding:0.6rem 1rem;font-size:0.83rem;margin-bottom:1rem;"></div>
+    <button class="btn-login" onclick="doLogin()"><i class="fas fa-sign-in-alt me-2"></i>Sign In</button>
+    <div class="text-center mt-3">
+      <a href="index.html" style="font-size:0.8rem;color:var(--muted);text-decoration:none;"><i class="fas fa-arrow-left me-1"></i>Back to Public Site</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── SIDEBAR ──────────────────────────────────────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <div class="sidebar-logo">
+      <div class="s-icon"><i class="fas fa-dove"></i></div>
+      <div><div class="s-name">Eternal Rest</div><div class="s-role">Admin Panel</div></div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-item-s active" onclick="showPage('dashboard')"><i class="fas fa-chart-pie"></i>Dashboard</a>
+    <a class="nav-item-s" onclick="showPage('reservations')"><i class="fas fa-calendar-check"></i>Reservations <span class="nav-badge" id="resBadge" style="background:var(--danger);">—</span></a>
+    <a class="nav-item-s" onclick="showPage('calendar')"><i class="fas fa-calendar"></i>Service Calendar</a>
+
+    <div class="nav-section-label">Inventory</div>
+    <a class="nav-item-s" onclick="showPage('caskets')"><i class="fas fa-boxes-stacked"></i>Casket Inventory <span class="nav-badge" id="casketBadge">—</span></a>
+    <a class="nav-item-s" id="navMessages" onclick="showPage('messages')"><i class="fas fa-comments"></i>Inventory Messages <span class="nav-badge" id="msgBadge" style="background:#e74c3c;display:none;">0</span></a>
+
+    <div class="nav-section-label">Reports</div>
+    <a class="nav-item-s" onclick="showPage('analytics')"><i class="fas fa-chart-bar"></i>Analytics & Reports</a>
+
+    <div class="nav-section-label">Memorials</div>
+    <a class="nav-item-s" onclick="showPage('memorials')"><i class="fas fa-heart"></i>Memorials</a>
+    <a class="nav-item-s" onclick="showPage('photo-mod')"><i class="fas fa-images"></i>Photo Moderation <span class="nav-badge" id="photoModBadge" style="background:#c0392b;display:none;"></span></a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-card">
+      <div class="user-av" id="userAv">AD</div>
+      <div><div class="user-name" id="userNameDisplay">Admin User</div><div class="user-role-tag" id="userRoleDisplay">Administrator</div></div>
+      <button onclick="doLogout()" style="background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;margin-left:auto;" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN AREA ────────────────────────────────────────────────────────────── -->
+<div class="main-area" id="mainArea">
+  <div class="topbar">
+    <div class="d-flex align-items-center gap-3">
+      <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="page-title" id="pageTitle">Dashboard</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="notif-btn"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+      <span id="branchBadge" style="font-size:0.75rem;background:var(--gold-pale);color:var(--gold);border:1px solid var(--gold);border-radius:20px;padding:0.3rem 0.9rem;font-weight:700;letter-spacing:0.5px;display:none;"><i class="fas fa-building me-1"></i><span id="branchBadgeLabel"></span></span>
+      <button class="btn-action btn-view2" onclick="window.open('index.html','_blank')"><i class="fas fa-external-link-alt me-1"></i>View Site</button>
+      <div class="user-card">
+        <div class="user-av" id="topUserAv" style="width:32px;height:32px;font-size:0.75rem;">AD</div>
+        <span style="font-size:0.82rem;font-weight:700;color:var(--navy);" id="topUserName">Admin</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+
+    <!-- DASHBOARD -->
+    <div class="page-section active" id="page-dashboard">
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-4">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><div class="stat-num" id="dash-caskets" style="color:var(--navy);">—</div><div class="stat-label">Total Caskets</div></div>
+              <div class="stat-icon" style="background:var(--gold-pale);color:var(--gold);"><i class="fas fa-boxes-stacked"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-4">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><div class="stat-num" id="dash-pending" style="color:var(--danger);">—</div><div class="stat-label">Pending Reservations</div></div>
+              <div class="stat-icon" style="background:#fee2e2;color:var(--danger);"><i class="fas fa-calendar-check"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-4">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><div class="stat-num" id="dash-memorials" style="color:var(--success);">—</div><div class="stat-label">Active Memorials</div></div>
+              <div class="stat-icon" style="background:#d1fae5;color:var(--success);"><i class="fas fa-heart"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-3 mb-4">
+        <div class="col-12">
+          <div class="info-card">
+            <h6>Casket Status Breakdown</h6>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1" style="font-size:0.82rem;"><span>Available</span><span style="font-weight:700;color:var(--success);">31 (66%)</span></div>
+              <div class="progress-custom"><div class="progress-bar-custom" style="width:66%;background:linear-gradient(to right,#4a7c59,#6aaa7e);"></div></div>
+            </div>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1" style="font-size:0.82rem;"><span>Reserved</span><span style="font-weight:700;color:var(--danger);">10 (21%)</span></div>
+              <div class="progress-custom"><div class="progress-bar-custom" style="width:21%;background:linear-gradient(to right,#c0392b,#e74c3c);"></div></div>
+            </div>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1" style="font-size:0.82rem;"><span>Limited Stock</span><span style="font-weight:700;color:var(--warning);">6 (13%)</span></div>
+              <div class="progress-custom"><div class="progress-bar-custom" style="width:13%;background:linear-gradient(to right,#d97706,#f59e0b);"></div></div>
+            </div>
+            <hr/><h6>Top Category</h6>
+            <div style="font-size:0.85rem;color:var(--muted);display:flex;flex-direction:column;gap:0.4rem;" id="topCategories"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-3">
+        <div class="col-lg-7">
+          <div class="data-table">
+            <div class="table-head"><h6>Recent Reservations</h6><button class="btn-action btn-view2" onclick="showPage('reservations')">View All</button></div>
+            <div class="table-responsive">
+              <table class="table mb-0">
+                <thead><tr><th>Client</th><th>Casket</th><th>Date</th><th>Status</th></tr></thead>
+                <tbody id="recentResTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="info-card"><h6>Upcoming Services (Next 7 Days)</h6><div id="upcomingServices"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASKETS -->
+    <div class="page-section" id="page-caskets">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex gap-2">
+          <input type="search" class="form-ctrl" placeholder="Search caskets..." style="width:200px;" oninput="filterAdminCaskets(this.value)"/>
+          <select class="form-ctrl" style="width:140px;" onchange="filterAdminCasketStatus(this.value)">
+            <option value="">All Status</option><option value="available">Available</option><option value="reserved">Reserved</option><option value="limited">Limited</option>
+          </select>
+        </div>
+        <button class="btn-action" style="background:var(--gold);color:var(--white);padding:0.5rem 1rem;border-radius:6px;font-size:0.82rem;" data-bs-toggle="modal" data-bs-target="#casketModal"><i class="fas fa-plus me-1"></i>Add Casket</button>
+      </div>
+      <div class="data-table">
+        <div class="table-head"><h6>Casket Inventory</h6><span id="casketCount" style="font-size:0.8rem;color:var(--muted);"></span></div>
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead><tr><th>#</th><th>Photo</th><th>Name</th><th>Material</th><th>Category</th><th>Price</th><th>Status</th><th>Stock</th><th>Edit/Delete</th></tr></thead>
+            <tbody id="casketAdminTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESERVATIONS -->
+    <div class="page-section" id="page-reservations">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex gap-2">
+          <input type="search" class="form-ctrl" placeholder="Search reservations..." style="width:200px;" oninput="filterReservations(this.value)"/>
+          <select class="form-ctrl" style="width:140px;" onchange="filterResByStatus(this.value)">
+            <option value="">All Status</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <button class="btn-action" style="background:var(--gold);color:var(--white);padding:0.5rem 1rem;border-radius:6px;font-size:0.82rem;" data-bs-toggle="modal" data-bs-target="#resModal"><i class="fas fa-plus me-1"></i>New Reservation</button>
+      </div>
+      <div class="data-table">
+        <div class="table-head"><h6>All Reservations</h6></div>
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead><tr><th>ID</th><th>Client</th><th>Casket</th><th>Service Date</th><th>Payment</th><th>Pay Status</th><th>Status</th><th>Edit/Cancel</th></tr></thead>
+            <tbody id="reservationTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEMORIALS -->
+    <div class="page-section" id="page-memorials">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <input type="search" class="form-ctrl" placeholder="Search memorials..." style="width:240px;" oninput="filterAdminMemorials(this.value)"/>
+        <button class="btn-action" style="background:var(--gold);color:var(--white);padding:0.5rem 1rem;border-radius:6px;font-size:0.82rem;" data-bs-toggle="modal" data-bs-target="#memModal"><i class="fas fa-plus me-1"></i>Add Memorial</button>
+      </div>
+      <div class="data-table">
+        <div class="table-head"><h6>Digital Memorials</h6></div>
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead><tr><th>#</th><th>Name</th><th>Born</th><th>Passed</th><th>Candles</th><th>QR Code</th><th>Edit/Delete</th></tr></thead>
+            <tbody id="memorialAdminTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- PHOTO MODERATION -->
+    <div class="page-section" id="page-photo-mod">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+          <span style="font-size:0.8rem;color:var(--muted);">All photos uploaded by the public across all memorials. Review, edit captions, or delete inappropriate content.</span>
+        </div>
+        <button class="btn-action btn-view2" onclick="loadPhotoMod()"><i class="fas fa-sync me-1"></i>Refresh</button>
+      </div>
+      <div id="photoModGrid" class="row g-3">
+        <div class="col-12 text-center" style="color:var(--muted);padding:2rem;">
+          <div class="spinner-border spinner-border-sm me-2"></div>Loading photos...
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS & SALES REPORT -->
+    <div class="page-section" id="page-messages">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h5 style="font-family:'Playfair Display',serif;color:var(--navy);margin:0;">Inventory Messages</h5>
+          <small style="color:var(--muted);">Send stock requests to Super Admin</small>
+        </div>
+        <button class="btn-action" style="background:var(--gold);color:var(--white);padding:0.5rem 1rem;border-radius:6px;font-size:0.82rem;" onclick="loadMessages()"><i class="fas fa-sync me-1"></i>Refresh</button>
+      </div>
+      <div class="row g-3">
+        <div class="col-lg-8">
+          <div class="stat-card" style="padding:0;overflow:hidden;">
+            <div style="background:var(--navy-dark);padding:1rem 1.2rem;display:flex;align-items:center;gap:0.6rem;">
+              <i class="fas fa-headset" style="color:var(--gold);"></i>
+              <span style="color:#fff;font-weight:600;font-size:0.9rem;">Chat with Super Admin</span>
+              <span class="nav-badge" id="chatOnlineTag" style="background:#27ae60;margin-left:auto;font-size:0.65rem;">Inventory Channel</span>
+            </div>
+            <div id="chatMessages" style="height:380px;overflow-y:auto;padding:1rem;background:#faf8f4;display:flex;flex-direction:column;gap:0.7rem;">
+              <div style="text-align:center;color:var(--muted);font-size:0.82rem;margin:auto;">Loading messages...</div>
+            </div>
+            <div style="padding:0.8rem 1rem;border-top:1px solid var(--border);background:#fff;display:flex;gap:0.5rem;">
+              <select class="form-ctrl" id="chatMsgType" style="width:130px;flex-shrink:0;">
+                <option value="request">Stock Request</option>
+                <option value="info">Information</option>
+              </select>
+              <textarea class="form-ctrl" id="chatInput" rows="2" placeholder="Type your message here... (Enter to send, Shift+Enter for new line)" style="flex:1;resize:none;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
+              <button class="btn-action" style="background:var(--gold);color:#fff;padding:0.5rem 1rem;align-self:flex-end;" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="stat-card">
+            <div style="font-size:0.78rem;font-weight:700;color:var(--navy);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.8rem;"><i class="fas fa-lightbulb me-1" style="color:var(--gold);"></i>Quick Request Templates</div>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;">
+              <button class="btn-action" style="background:transparent;border:1px solid var(--border);color:var(--navy);font-size:0.78rem;padding:0.5rem 0.8rem;text-align:left;" onclick="useTemplate('Request for restock of [Casket Name]. Current stock is [N]. Please order [Qty] units from supplier.')">📦 Restock Request</button>
+              <button class="btn-action" style="background:transparent;border:1px solid var(--border);color:var(--navy);font-size:0.78rem;padding:0.5rem 0.8rem;text-align:left;" onclick="useTemplate('Urgent: We need [Casket Name] for a reservation on [Date]. Please process immediately.')">🚨 Urgent Order</button>
+              <button class="btn-action" style="background:transparent;border:1px solid var(--border);color:var(--navy);font-size:0.78rem;padding:0.5rem 0.8rem;text-align:left;" onclick="useTemplate('Low stock alert: [Casket Name] has only [N] units remaining. Please advise on restocking.')">⚠️ Low Stock Alert</button>
+              <button class="btn-action" style="background:transparent;border:1px solid var(--border);color:var(--navy);font-size:0.78rem;padding:0.5rem 0.8rem;text-align:left;" onclick="useTemplate('Request inventory transfer from Bohol Branch: [Casket Name] x [Qty].')">🔄 Transfer Request</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="page-analytics">
+      <div class="row g-3 mb-4" id="analyticsStatCards">
+        <div class="col-6 col-lg-3">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><div class="stat-num" id="an-revenue" style="color:var(--gold);font-size:1.5rem;">₱—</div><div class="stat-label">Total Revenue</div></div>
+              <div class="stat-icon" style="background:#fef3c7;"><i class="fas fa-peso-sign" style="color:var(--gold);"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><div class="stat-num" id="an-collected" style="color:var(--success);font-size:1.5rem;">₱—</div><div class="stat-label">Collected</div></div>
+              <div class="stat-icon" style="background:#d1fae5;"><i class="fas fa-check-circle" style="color:var(--success);"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><div class="stat-num" id="an-outstanding" style="color:var(--danger);font-size:1.5rem;">₱—</div><div class="stat-label">Outstanding</div></div>
+              <div class="stat-icon" style="background:#fee2e2;"><i class="fas fa-exclamation-circle" style="color:var(--danger);"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+              <div><div class="stat-num" id="an-total-res" style="color:var(--navy);font-size:1.5rem;">—</div><div class="stat-label">Total Reservations</div></div>
+              <div class="stat-icon" style="background:var(--cream);"><i class="fas fa-calendar-check" style="color:var(--navy);"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <!-- Monthly Revenue Chart -->
+        <div class="col-lg-8">
+          <div class="info-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 style="margin:0;font-family:'Playfair Display',serif;color:var(--navy);">Monthly Revenue (Last 6 Months)</h6>
+              <button class="btn-action btn-view2" onclick="exportSalesReport()"><i class="fas fa-download me-1"></i>Export CSV</button>
+            </div>
+            <div id="monthlyChartWrap" style="overflow-x:auto;">
+              <canvas id="monthlyChart" height="220"></canvas>
+            </div>
+          </div>
+        </div>
+        <!-- Status Breakdown -->
+        <div class="col-lg-4">
+          <div class="info-card" style="height:100%;">
+            <h6 style="margin-bottom:1rem;font-family:'Playfair Display',serif;color:var(--navy);">Reservation Status</h6>
+            <div id="statusChartWrap"><canvas id="statusChart" height="200"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <!-- Payment Method Breakdown -->
+        <div class="col-lg-4">
+          <div class="info-card">
+            <h6 style="margin-bottom:1rem;font-family:'Playfair Display',serif;color:var(--navy);">Payment Methods</h6>
+            <div id="paymentChartWrap"><canvas id="paymentChart" height="200"></canvas></div>
+          </div>
+        </div>
+        <!-- Service Type -->
+        <div class="col-lg-4">
+          <div class="info-card">
+            <h6 style="margin-bottom:1rem;font-family:'Playfair Display',serif;color:var(--navy);">Service Types</h6>
+            <div id="serviceChartWrap"><canvas id="serviceChart" height="200"></canvas></div>
+          </div>
+        </div>
+        <!-- Inventory Summary -->
+        <div class="col-lg-4">
+          <div class="info-card">
+            <h6 style="margin-bottom:1rem;font-family:'Playfair Display',serif;color:var(--navy);">Inventory Summary</h6>
+            <div id="inventorySummaryList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sales Report Table -->
+      <div class="data-table">
+        <div class="table-head">
+          <h6>Sales Report</h6>
+          <div class="d-flex gap-2 align-items-center">
+            <select class="form-ctrl" style="width:130px;font-size:0.8rem;" id="salesReportFilter" onchange="loadAnalytics()">
+              <option value="6">Last 6 months</option>
+              <option value="3">Last 3 months</option>
+              <option value="12">Last 12 months</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead><tr><th>Month</th><th>Reservations</th><th>Gross Revenue</th><th>Collected</th></tr></thead>
+            <tbody id="salesReportTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="page-section" id="page-calendar">
+      <div class="info-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 id="calTitle">Service Calendar</h6>
+          <div class="d-flex gap-2">
+            <button class="btn-action btn-view2" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+            <button class="btn-action btn-view2" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        </div>
+        <div id="calendarGrid"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── MODALS ────────────────────────────────────────────────────────────────── -->
+<!-- Casket Modal -->
+<div class="modal fade" id="casketModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header-c d-flex justify-content-between align-items-center">
+        <h5 id="casketModalTitle">Add New Casket</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="p-4">
+        <div class="row g-3">
+
+          <!-- LEFT: Photo uploader -->
+          <div class="col-md-4">
+            <label class="form-label-c">Casket Photo</label>
+            <div class="photo-drop-zone" id="photoDropZone" onclick="triggerPhotoInput()" ondragover="onPhotoDragOver(event)" ondragleave="onPhotoDragLeave(event)" ondrop="onPhotoDrop(event)">
+              <div class="drop-placeholder" id="dropPlaceholder">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span class="dp-title">Click or drag photo here</span>
+                <small>JPG, PNG, WEBP — max 5 MB</small>
+              </div>
+              <img id="photoPreviewImg" class="photo-preview" src="" alt="" style="display:none;"/>
+            </div>
+            <div class="photo-actions" id="photoActionBtns" style="display:none;">
+              <button type="button" class="btn-photo-change" onclick="triggerPhotoInput()"><i class="fas fa-camera me-1"></i>Change Photo</button>
+              <button type="button" class="btn-photo-remove" onclick="removePhoto()"><i class="fas fa-times me-1"></i>Remove</button>
+            </div>
+            <input type="file" id="photoFileInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" onchange="onPhotoFileSelected(this)"/>
+            <div id="photoUploadStatus" style="font-size:0.75rem;margin-top:0.4rem;"></div>
+          </div>
+
+          <!-- RIGHT: Fields -->
+          <div class="col-md-8">
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label-c">Casket Name *</label><input type="text" class="form-ctrl" id="c_name" placeholder="e.g. Heritage Narra Deluxe"/></div>
+              <div class="col-md-6"><label class="form-label-c">Material *</label><input type="text" class="form-ctrl" id="c_material" placeholder="e.g. Premium Narra Wood"/></div>
+              <div class="col-md-6"><label class="form-label-c">Category</label>
+                <select class="form-ctrl" id="c_category"><option value="wood">Wood</option><option value="metal">Metal</option></select>
+              </div>
+              <div class="col-md-6"><label class="form-label-c">Price (₱) *</label><input type="number" class="form-ctrl" id="c_price" placeholder="e.g. 45000.00"/></div>
+              <div class="col-md-6"><label class="form-label-c">Status</label>
+                <select class="form-ctrl" id="c_status"><option value="available">Available</option><option value="limited">Limited</option><option value="reserved">Reserved</option></select>
+              </div>
+              <div class="col-md-6"><label class="form-label-c">Stock Quantity</label><input type="number" class="form-ctrl" id="c_stock" value="1" min="0"/></div>
+              <div class="col-12"><label class="form-label-c">Description</label><textarea class="form-ctrl" id="c_desc" rows="2" placeholder="Brief description of the casket design and craftsmanship..."></textarea></div>
+              <div class="col-12"><label class="form-label-c">Features (comma-separated)</label><input type="text" class="form-ctrl" id="c_features" placeholder="e.g. Velvet Interior, Brass Handles, Satin Lining"/></div>
+              <div class="col-12">
+                <label class="form-label-c">Dimensions (inches) — Standard: L76 × W26 × H23</label>
+                <div class="d-flex gap-2">
+                  <div style="flex:1;"><label class="form-label-c" style="font-size:0.65rem;">Length</label><input type="number" class="form-ctrl" id="c_size_length" value="76" step="0.01" min="1"/></div>
+                  <div style="flex:1;"><label class="form-label-c" style="font-size:0.65rem;">Width</label><input type="number" class="form-ctrl" id="c_size_width" value="26" step="0.01" min="1"/></div>
+                  <div style="flex:1;"><label class="form-label-c" style="font-size:0.65rem;">Height</label><input type="number" class="form-ctrl" id="c_size_height" value="23" step="0.01" min="1"/></div>
+                </div>
+              </div>
+              <div class="col-12">
+                <label class="form-label-c">Package Inclusions</label>
+                <div id="inclusionsList" style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.5rem;"></div>
+                <div class="d-flex gap-2">
+                  <input type="text" class="form-ctrl" id="c_incl_item" placeholder="e.g. Memorial Candles" style="flex:2;"/>
+                  <input type="number" class="form-ctrl" id="c_incl_qty" placeholder="Qty" min="1" style="width:70px;" value="1"/>
+                  <input type="text" class="form-ctrl" id="c_incl_unit" placeholder="e.g. pcs" style="width:80px;"/>
+                  <button type="button" class="btn-action" style="padding:0.4rem 0.8rem;font-size:0.8rem;white-space:nowrap;" onclick="addInclusion()"><i class="fas fa-plus"></i></button>
+                </div>
+                <small style="color:var(--muted);font-size:0.72rem;">Add items included in this package (candles, chairs, tables, attire, etc.)</small>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <button class="btn-login mt-4" onclick="saveCasket()"><i class="fas fa-save me-2"></i>Save Casket</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reservation Modal -->
+<div class="modal fade" id="resModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header-c d-flex justify-content-between align-items-center">
+        <h5 id="resModalTitle">New Reservation</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="p-4">
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label-c">First Name</label><input type="text" class="form-ctrl" id="r_fname" placeholder="e.g. Juan"/></div>
+          <div class="col-md-6"><label class="form-label-c">Last Name</label><input type="text" class="form-ctrl" id="r_lname" placeholder="e.g. dela Cruz"/></div>
+          <div class="col-md-6"><label class="form-label-c">Email</label><input type="email" class="form-ctrl" id="r_email" placeholder="e.g. jdelacruz@email.com"/></div>
+          <div class="col-md-6"><label class="form-label-c">Phone</label><input type="tel" class="form-ctrl" id="r_phone" placeholder="e.g. +63 917 000 0000"/></div>
+          <div class="col-md-6"><label class="form-label-c">Casket</label>
+            <select class="form-ctrl" id="r_casket"><option value="">— Select a casket —</option></select>
+          </div>
+          <div class="col-md-6"><label class="form-label-c">Service Date</label><input type="date" class="form-ctrl" id="r_date"/></div>
+          <div class="col-md-6"><label class="form-label-c">Service Type</label>
+            <select class="form-ctrl" id="r_type"><option>Full Funeral Service</option><option>Graveside Only</option><option>Cremation Service</option></select>
+          </div>
+          <div class="col-md-6"><label class="form-label-c">Status</label>
+            <select class="form-ctrl" id="r_status"><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+          </div>
+          <div class="col-12"><label class="form-label-c">Notes</label><textarea class="form-ctrl" id="r_notes" rows="2" placeholder="e.g. Specific floral preferences, religious rites, etc."></textarea></div>
+          <div style="background:#f8f6f1;border-radius:8px;padding:1rem;margin-top:0.5rem;">
+            <div style="font-size:0.78rem;font-weight:700;color:var(--navy);letter-spacing:1px;text-transform:uppercase;margin-bottom:0.8rem;"><i class="fas fa-info-circle me-2" style="color:var(--gold);"></i>Deceased & Retrieval Details</div>
+            <div class="row g-2">
+              <div class="col-md-6"><label class="form-label-c">Deceased Name</label><input type="text" class="form-ctrl" id="r_deceased_name" placeholder="e.g. Maria Santos dela Cruz"/></div>
+              <div class="col-md-6"><label class="form-label-c">Client Address</label><input type="text" class="form-ctrl" id="r_client_address" placeholder="e.g. Blk 2 Lot 5, Mabini St., Brgy. San Jose, Davao City"/></div>
+              <div class="col-md-12"><label class="form-label-c">Retrieval Location</label><input type="text" class="form-ctrl" id="r_retrieval_location" placeholder="e.g. Divine Grace Hospital, J.P. Laurel Ave., Davao City"/></div>
+              <div class="col-md-6"><label class="form-label-c">Retrieval Date & Time</label><input type="datetime-local" class="form-ctrl" id="r_retrieval_datetime"/></div>
+              <div class="col-md-6"><label class="form-label-c">Burial Schedule</label><input type="datetime-local" class="form-ctrl" id="r_burial_schedule"/></div>
+              <div class="col-md-6"><label class="form-label-c">Burial Place</label><input type="text" class="form-ctrl" id="r_burial_place" placeholder="e.g. Davao Memorial Park, Ma-a, Davao City"/></div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-login mt-3" onclick="saveReservation()"><i class="fas fa-save me-2"></i>Save Reservation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Memorial Modal -->
+<div class="modal fade" id="memModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header-c d-flex justify-content-between align-items-center">
+        <h5>Add Memorial</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="p-4">
+        <div class="row g-3">
+          <div class="col-12"><label class="form-label-c">Full Name *</label><input type="text" class="form-ctrl" id="m_name" placeholder="e.g. Juan dela Cruz"/></div>
+          <div class="col-md-6"><label class="form-label-c">Date of Birth</label><input type="date" class="form-ctrl" id="m_born"/></div>
+          <div class="col-md-6"><label class="form-label-c">Date of Passing</label><input type="date" class="form-ctrl" id="m_died"/></div>
+          <div class="col-12"><label class="form-label-c">Tribute Message</label><textarea class="form-ctrl" id="m_quote" rows="3" placeholder="e.g. Forever in our hearts. Your love and kindness will never be forgotten."></textarea></div>
+        </div>
+        <button class="btn-login mt-3" onclick="saveMemorial()"><i class="fas fa-heart me-2"></i>Add Memorial</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QR Modal -->
+<div class="modal fade" id="adminQrModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+    <div class="modal-content">
+      <div class="modal-header-c d-flex justify-content-between align-items-center">
+        <h5><i class="fas fa-qrcode me-2"></i>Memorial QR Code</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="p-4 text-center">
+        <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:0.2rem;" id="adminQrName">—</div>
+        <div style="font-size:0.72rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:1.2rem;" id="adminQrDates">—</div>
+        <div class="d-flex justify-content-center mb-3"><div class="qr-preview-wrap"><div id="adminQrCanvas"></div></div></div>
+        <div class="admin-qr-url" id="adminQrUrl"></div>
+        <div class="d-flex gap-2 justify-content-center mt-3">
+          <button class="btn-login" style="padding:0.5rem 1.2rem;font-size:0.8rem;width:auto;" onclick="adminDownloadQR()"><i class="fas fa-download me-1"></i>Download PNG</button>
+          <button class="btn-login" style="padding:0.5rem 1.2rem;font-size:0.8rem;width:auto;background:transparent;border:1.5px solid var(--gold);color:var(--gold);" onclick="adminCopyQRLink()"><i class="fas fa-copy me-1"></i>Copy Link</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index:9999">
+  <div id="adminToast" class="toast toast-admin align-items-center">
+    <div class="d-flex">
+      <div class="toast-body" id="adminToastMsg"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ── API BASE: auto-detects localhost vs live hosting ──────────
+const API_BASE = (() => {
+  const { protocol, hostname, port } = window.location;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return `${protocol}//${hostname}:3000/api`;
+  }
+  return `${protocol}//${hostname}${port ? ':'+port : ''}/api`;
+})();
+const API_ORIGIN = API_BASE.replace('/api', '');
+const REQUIRED_ROLE = 'admin'; // This page is for admins only
+
+async function apiFetch(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (AUTH_TOKEN) headers['Authorization'] = 'Bearer ' + AUTH_TOKEN;
+  try {
+    const res = await fetch(API_BASE + path, { headers, ...opts });
+    return res.json();
+  } catch(e) {
+    return { success: false, message: 'Network error – is the server running?' };
+  }
+}
+
+let isLoggedIn      = false;
+let AUTH_TOKEN      = localStorage.getItem('er_admin_token') || null;
+let CURRENT_USER    = null;
+let RESERVATIONS    = [];
+let calOffset       = 0;
+let editingCasketId = null;
+let editingResId    = null;
+let _adminMemorialsCache = [];
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const errEl    = document.getElementById('loginError');
+  const deniedEl = document.getElementById('accessDenied');
+  errEl.style.display = 'none';
+  deniedEl.style.display = 'none';
+
+  if (!username || !password) {
+    errEl.textContent = 'Username and password are required.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const result = await apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
+
+  if (result.success) {
+    const role = result.user.role;
+    // Role check: only admin or superadmin can use this panel
+    if (role !== 'admin' && role !== 'superadmin') {
+      deniedEl.style.display = 'block';
+      document.getElementById('loginPass').value = '';
+      return;
+    }
+    AUTH_TOKEN   = result.token;
+    CURRENT_USER = result.user;
+    localStorage.setItem('er_admin_token', AUTH_TOKEN);
+    // Superadmin who lands on admin.html gets redirected to their panel
+    if (result.user.role === 'superadmin') {
+      window.location.href = 'superadmin.html';
+      return;
+    }
+    isLoggedIn = true;
+    document.getElementById('loginScreen').style.display = 'none';
+    const u = result.user;
+    const initials = (u.fname[0] + (u.lname[0]||'')).toUpperCase();
+    setUserUI(u.fname + ' ' + u.lname, u.role, initials, u.branch_name);
+    initDashboard();
+    checkMsgBadge();
+    setInterval(checkMsgBadge, 30000);
+    startMsgPolling();
+  } else {
+    errEl.textContent = result.message || 'Invalid credentials.';
+    errEl.style.display = 'block';
+  }
+}
+
+function setUserUI(name, role, initials, branchName) {
+  document.getElementById('userAv').textContent          = initials;
+  document.getElementById('topUserAv').textContent       = initials;
+  document.getElementById('userNameDisplay').textContent = name;
+  document.getElementById('userRoleDisplay').textContent = role === 'superadmin' ? 'Super Administrator' : 'Administrator';
+  document.getElementById('topUserName').textContent     = name.split(' ')[0];
+  if (branchName) {
+    document.getElementById('branchBadge').style.display = 'inline-flex';
+    document.getElementById('branchBadgeLabel').textContent = branchName;
+    document.querySelector('.s-role').textContent = branchName;
+  }
+}
+
+function doLogout() {
+  AUTH_TOKEN = null; CURRENT_USER = null;
+  localStorage.removeItem('er_admin_token');
+  isLoggedIn = false;
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('accessDenied').style.display = 'none';
+}
+
+function togglePass() {
+  const inp = document.getElementById('loginPass');
+  const icon = document.getElementById('passEye');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  icon.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function showPage(page) {
+  if (page === 'messages') { loadMessages(); }
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item-s').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item-s').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + page + "'")) n.classList.add('active');
+  });
+  const titles = { dashboard:'Dashboard', caskets:'Casket Inventory', reservations:'Reservations', memorials:'Digital Memorials', calendar:'Service Calendar', 'photo-mod':'Photo Moderation', messages:'Inventory Messages', analytics:'Analytics & Reports' };
+  document.getElementById('pageTitle').textContent = titles[page] || page;
+  if (page === 'caskets')      loadAdminCaskets();
+  if (page === 'reservations') loadReservations();
+  if (page === 'memorials')    loadAdminMemorials();
+  if (page === 'calendar')     loadCalendar();
+  if (page === 'photo-mod')    loadPhotoMod();
+  if (page === 'analytics')    loadAnalytics();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('collapsed');
+  document.getElementById('mainArea').classList.toggle('expanded');
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+async function initDashboard() {
+  const { success, data } = await apiFetch('/dashboard/stats');
+  if (success) {
+    document.getElementById('dash-caskets').textContent  = data.totalCaskets;
+    document.getElementById('dash-pending').textContent  = data.pendingReservations;
+    document.getElementById('dash-memorials').textContent = data.totalMemorials;
+    document.getElementById('casketBadge').textContent   = data.totalCaskets;
+    document.getElementById('resBadge').textContent      = data.pendingReservations;
+  }
+  loadRecentRes();
+  loadUpcoming();
+}
+
+async function loadRecentRes() {
+  const { success, data } = await apiFetch('/reservations');
+  if (!success) return;
+  RESERVATIONS = data;
+  const tbody = document.getElementById('recentResTable');
+  if (!tbody) return;
+  tbody.innerHTML = data.slice(0,5).map(r =>
+    '<tr><td><div style="font-weight:700;">' + r.fname + ' ' + r.lname + '</div><div style="font-size:0.75rem;color:var(--muted);">' + r.email + '</div></td>' +
+    '<td style="font-size:0.82rem;">' + (r.casket_name||'—') + '</td>' +
+    '<td style="font-size:0.82rem;">' + (r.service_date||'—') + '</td>' +
+    '<td><span class="badge-status badge-' + r.status + '">' + r.status + '</span></td></tr>').join('');
+}
+
+async function loadUpcoming() {
+  const { success, data } = await apiFetch('/reservations');
+  if (!success) return;
+  const el = document.getElementById('upcomingServices');
+  if (!el) return;
+  const upcoming = data.filter(r => !['cancelled','completed'].includes(r.status)).slice(0,4);
+  el.innerHTML = upcoming.length
+    ? upcoming.map(r => '<div class="cal-event"><i class="fas fa-calendar-day me-1"></i><strong>' + r.fname + ' ' + r.lname + '</strong> — ' + (r.casket_name||'Service') + ' <span style="color:var(--muted);">' + (r.service_date||'') + '</span></div>').join('')
+    : '<p style="font-size:0.83rem;color:var(--muted);">No upcoming services.</p>';
+}
+
+// ── CASKETS ───────────────────────────────────────────────────────────────────
+async function loadAdminCaskets(search, status) {
+  search = search || ''; status = status || '';
+  const qs = new URLSearchParams();
+  if (search) qs.set('search', search);
+  if (status) qs.set('status', status);
+  // Scope to branch for non-superadmin
+  if (CURRENT_USER && CURRENT_USER.branch_id) qs.set('branch_id', CURRENT_USER.branch_id);
+  const { success, data } = await apiFetch('/caskets?' + qs.toString());
+  if (success) renderAdminCaskets(data);
+}
+function renderAdminCaskets(data) {
+  const tbody = document.getElementById('casketAdminTable');
+  document.getElementById('casketCount').textContent = data.length + ' records';
+  // Keep walk-in reservation dropdown in sync with live inventory (wood & metal only)
+  const rCasket = document.getElementById('r_casket');
+  if (rCasket) {
+    const available = data.filter(c => c.status !== 'reserved' && (c.category === 'wood' || c.category === 'metal'));
+    rCasket.innerHTML = '<option value="">— Select a casket —</option>' +
+      available.map(c => '<option value="' + c.name + '">'+c.name+' ('+c.category+') – ₱'+Number(c.price).toLocaleString()+'</option>').join('');
+  }
+  tbody.innerHTML = data.map(c => {
+    const thumb = c.image_url
+      ? `<img src="${c.image_url}" class="casket-thumb" alt="${c.name}" onerror="this.outerHTML='<div class=casket-thumb-placeholder><i class=fas fa-image></i></div>'">`
+      : `<div class="casket-thumb-placeholder"><i class="fas fa-image"></i></div>`;
+    const priceTier = c.price >= 50000 ? '50k above' : '50k below';
+    return '<tr>' +
+    '<td style="color:var(--muted);font-size:0.78rem;">#' + c.id + '</td>' +
+    '<td>' + thumb + '</td>' +
+    '<td><div style="font-weight:700;">' + c.name + '</div><div style="font-size:0.75rem;color:var(--muted);">' + (c.description||'').substring(0,40) + (c.description&&c.description.length>40?'...':'') + '</div></td>' +
+    '<td style="font-size:0.83rem;">' + (c.material||'—') + '</td>' +
+    '<td><span style="font-size:0.72rem;background:var(--gold-pale);color:var(--gold);padding:0.2rem 0.5rem;border-radius:10px;font-weight:700;">' + c.category + '</span><br/><span style="font-size:0.68rem;color:var(--muted);">' + priceTier + '</span></td>' +
+    '<td><div style="font-weight:700;color:var(--gold);">₱' + Number(c.price).toLocaleString() + '</div><div style="font-size:0.68rem;color:var(--muted);">L' + (c.size_length||76) + ' W' + (c.size_width||26) + ' H' + (c.size_height||23) + '</div></td>' +
+    '<td><span class="badge-status badge-' + c.status + '">' + c.status + '</span></td>' +
+    '<td style="text-align:center;font-weight:700;">' + c.stock + '</td>' +
+    '<td><div class="d-flex gap-1"><button class="btn-action btn-edit" onclick="editCasket(' + c.id + ')"><i class="fas fa-edit"></i></button><button class="btn-action btn-delete" onclick="deleteCasket(' + c.id + ')"><i class="fas fa-trash"></i></button></div></td></tr>';
+  }).join('');
+}
+function filterAdminCaskets(q)      { loadAdminCaskets(q); }
+function filterAdminCasketStatus(s) { loadAdminCaskets('', s); }
+async function editCasket(id) {
+  const { success, data: c } = await apiFetch('/caskets/' + id);
+  if (!success) return;
+  editingCasketId = id;
+  document.getElementById('casketModalTitle').textContent = 'Edit Casket';
+  document.getElementById('c_name').value     = c.name;
+  document.getElementById('c_material').value = c.material || '';
+  document.getElementById('c_category').value = c.category;
+  document.getElementById('c_price').value    = c.price;
+  document.getElementById('c_status').value   = c.status;
+  document.getElementById('c_stock').value    = c.stock;
+  document.getElementById('c_desc').value     = c.description || '';
+  document.getElementById('c_features').value = (c.features||[]).join(', ');
+  document.getElementById('c_size_length').value = c.size_length || 76;
+  document.getElementById('c_size_width').value  = c.size_width  || 26;
+  document.getElementById('c_size_height').value = c.size_height || 23;
+  // Load existing photo
+  if (c.image_url) {
+    setPhotoPreview(c.image_url);
+    currentPhotoUrl = c.image_url;
+  } else {
+    resetPhotoZone();
+  }
+  new bootstrap.Modal(document.getElementById('casketModal')).show();
+}
+async function saveCasket() {
+  const name = document.getElementById('c_name').value.trim();
+  if (!name) { showToast('Casket name is required.'); return; }
+  const body = {
+    name,
+    material:    document.getElementById('c_material').value,
+    category:    document.getElementById('c_category').value,
+    price:       parseFloat(document.getElementById('c_price').value) || 0,
+    status:      document.getElementById('c_status').value,
+    stock:       parseInt(document.getElementById('c_stock').value) || 0,
+    description: document.getElementById('c_desc').value,
+    features:    document.getElementById('c_features').value
+                   ? document.getElementById('c_features').value.split(',').map(s => s.trim()).filter(Boolean)
+                   : [],
+    size_length: parseFloat(document.getElementById('c_size_length').value) || 76,
+    size_width:  parseFloat(document.getElementById('c_size_width').value)  || 26,
+    size_height: parseFloat(document.getElementById('c_size_height').value) || 23
+  };
+
+  const result = editingCasketId
+    ? await apiFetch('/caskets/' + editingCasketId, { method: 'PUT', body: JSON.stringify(body) })
+    : await apiFetch('/caskets', { method: 'POST', body: JSON.stringify(body) });
+
+  if (!result.success) { showToast('❌ ' + (result.message || 'Save failed.')); return; }
+
+  // Get the casket ID (new insert or existing)
+  const casketId = editingCasketId || result.id;
+
+  // Upload pending photo if any
+  if (pendingPhotoFile && casketId) {
+    await uploadPhoto(casketId);
+  }
+  // Remove photo if flagged
+  if (photoRemovePending && editingCasketId) {
+    await apiFetch('/caskets/' + editingCasketId + '/photo', { method: 'DELETE' });
+    photoRemovePending = false;
+  }
+
+  showToast(editingCasketId ? '✅ Casket updated!' : '✅ Casket added!');
+  editingCasketId = null;
+  pendingPhotoFile = null;
+  loadAdminCaskets();
+  bootstrap.Modal.getInstance(document.getElementById('casketModal')).hide();
+}
+async function deleteCasket(id) {
+  if (!confirm('Delete this casket permanently?')) return;
+  const result = await apiFetch('/caskets/' + id, { method: 'DELETE' });
+  if (result.success) { loadAdminCaskets(); showToast('🗑️ Casket deleted.'); }
+  else if (result.message && result.message.toLowerCase().includes('access denied')) {
+    showToast('⚠️ Only Super Admins can delete caskets. Please contact your Super Administrator.');
+  } else showToast('❌ ' + (result.message||'Delete failed.'));
+}
+
+// ── RESERVATIONS ──────────────────────────────────────────────────────────────
+async function loadReservations(search, status) {
+  search = search || ''; status = status || '';
+  const qs = new URLSearchParams();
+  if (search) qs.set('search', search);
+  if (status) qs.set('status', status);
+  const { success, data } = await apiFetch('/reservations?' + qs.toString());
+  if (success) { RESERVATIONS = data; renderReservations(data); }
+}
+function renderReservations(data) {
+  const tbody = document.getElementById('reservationTable');
+  tbody.innerHTML = data.map(r => {
+    const ps = r.payment_status || 'pending_verification';
+    const payBadge = ps === 'verified'
+      ? '<span class="badge-status badge-confirmed">Verified</span>'
+      : ps === 'rejected'
+        ? '<span class="badge-status badge-cancelled">Rejected</span>'
+        : '<span class="badge-status badge-pending">Pending</span>';
+    const verifyBtn = ps === 'pending_verification'
+      ? '<button class="btn-action btn-edit" style="font-size:0.65rem;" onclick="verifyPayment(' + r.id + ',\'verified\')"><i class="fas fa-check me-1"></i>Verify</button>' +
+        '<button class="btn-action btn-delete" style="font-size:0.65rem;" onclick="verifyPayment(' + r.id + ',\'rejected\')"><i class="fas fa-times"></i></button>'
+      : '';
+    const pmLabel = r.payment_method ? r.payment_method.toUpperCase() : 'NONE';
+    const isInstallment = r.installment_plan == 1;
+    const pmBadgeStyle = isInstallment ? 'badge-status' : 'badge-status badge-confirmed';
+    const pmBadgeColor = isInstallment ? 'background:#fef3c7;color:#92400e;' : '';
+    const pmBadgeHtml = r.payment_method
+      ? `<span class="${pmBadgeStyle}" style="text-transform:none;${pmBadgeColor}">${pmLabel}${isInstallment ? ' · ' + (r.installment_months||'?') + ' mo' : ''}</span>`
+      : '<span class="badge-status badge-pending">None</span>';
+    const totalHtml = r.price_total > 0
+      ? `<div style="font-size:0.7rem;color:var(--gold);font-weight:700;">₱${Number(r.price_total).toLocaleString()}</div>`
+      : '';
+    return '<tr>' +
+    '<td style="font-size:0.78rem;font-weight:700;color:var(--gold);">#' + r.id + '</td>' +
+    '<td><div style="font-weight:700;">' + r.fname + ' ' + r.lname + '</div>' +
+         '<div style="font-size:0.72rem;color:var(--muted);">' + r.phone + '</div>' +
+         '<div style="font-family:monospace;font-size:0.68rem;color:var(--muted);">' + (r.payment_reference||'—') + '</div></td>' +
+    '<td style="font-size:0.83rem;">' + (r.casket_name||'—') + (totalHtml) + '</td>' +
+    '<td style="font-size:0.83rem;">' + (r.service_date||'—') + '</td>' +
+    '<td>' + pmBadgeHtml + '</td>' +
+    '<td>' + payBadge + '<div class="d-flex gap-1 mt-1">' + verifyBtn + '</div></td>' +
+    '<td><select class="badge-status badge-' + r.status + '" style="border:none;font-size:0.7rem;padding:0.3rem 0.5rem;border-radius:20px;cursor:pointer;font-weight:700;text-transform:uppercase;" onchange="updateResStatus(' + r.id + ',this.value,this)">' +
+    '<option value="pending"'   + (r.status==='pending'   ?' selected':'') + '>Pending</option>' +
+    '<option value="confirmed"' + (r.status==='confirmed' ?' selected':'') + '>Confirmed</option>' +
+    '<option value="completed"' + (r.status==='completed' ?' selected':'') + '>Completed</option>' +
+    '<option value="cancelled"' + (r.status==='cancelled' ?' selected':'') + '>Cancelled</option>' +
+    '</select></td>' +
+    '<td><div class="d-flex gap-1"><button class="btn-action btn-view2" onclick="printContract(' + r.id + ')"><i class="fas fa-file-contract me-1"></i>Contract</button>' +
+    (r.status !== 'cancelled' && r.status !== 'completed'
+      ? '<button class="btn-action btn-delete" onclick="cancelReservation(' + r.id + ')" title="Cancel Reservation"><i class="fas fa-ban me-1"></i>Cancel</button>'
+      : '<span style="font-size:0.7rem;color:var(--muted);padding:0.3rem 0.5rem;font-style:italic;">' + (r.status === 'cancelled' ? 'Cancelled' : 'Completed') + '</span>'
+    ) +
+    '</div></td></tr>';
+  }).join('') || '<tr><td colspan="8" class="text-center text-muted" style="padding:2rem;">No reservations found.</td></tr>';
+}
+async function verifyPayment(id, payment_status) {
+  const label = payment_status === 'verified' ? 'verify' : 'reject';
+  if (!confirm('Are you sure you want to ' + label + ' this payment?')) return;
+  const result = await apiFetch('/reservations/' + id + '/payment', { method: 'PUT', body: JSON.stringify({ payment_status }) });
+  if (result.success) { loadReservations(); showToast(payment_status === 'verified' ? '✅ Payment verified! Reservation confirmed.' : '❌ Payment rejected.'); }
+  else showToast('❌ ' + (result.message||'Failed.'));
+}
+async function updateResStatus(id, val, sel) {
+  const result = await apiFetch('/reservations/' + id + '/status', { method: 'PUT', body: JSON.stringify({ status: val }) });
+  if (result.success) { sel.className = 'badge-status badge-' + val; showToast('✅ Status updated to: ' + val); }
+  else showToast('❌ ' + (result.message||'Update failed.'));
+}
+function filterReservations(q) { loadReservations(q); }
+function filterResByStatus(s)  { loadReservations('', s); }
+async function cancelReservation(id) {
+  if (!confirm('Cancel this reservation? The client will be notified and the status will be set to Cancelled.')) return;
+  const result = await apiFetch('/reservations/' + id + '/status', { method: 'PUT', body: JSON.stringify({ status: 'cancelled' }) });
+  if (result.success) {
+    loadReservations();
+    showToast('⚠️ Reservation #' + id + ' has been cancelled.');
+  } else {
+    showToast('❌ ' + (result.message || 'Could not cancel reservation.'));
+  }
+}
+async function saveReservation() {
+  const fname = document.getElementById('r_fname').value.trim();
+  const lname = document.getElementById('r_lname').value.trim();
+  const email = document.getElementById('r_email').value.trim();
+  const phone = document.getElementById('r_phone').value.trim();
+  if (!fname || !lname || !email || !phone) { showToast('⚠️ Name, email and phone are required.'); return; }
+  const body = {
+    fname, lname, email, phone,
+    casket_name: document.getElementById('r_casket').value,
+    service_date: document.getElementById('r_date').value || null,
+    service_type: document.getElementById('r_type').value,
+    notes: document.getElementById('r_notes').value,
+    payment_method: 'Walk-in',
+    payment_reference: 'ADMIN-WALKIN-' + Date.now(),
+    branch_id: CURRENT_USER ? (CURRENT_USER.branch_id || 1) : 1
+  };
+  const result = await apiFetch('/reservations', { method: 'POST', body: JSON.stringify(body) });
+  if (result.success) { loadReservations(); bootstrap.Modal.getInstance(document.getElementById('resModal')).hide(); showToast('✅ Reservation saved!'); }
+  else showToast('❌ ' + (result.message||'Failed.'));
+}
+
+// ── MEMORIALS ─────────────────────────────────────────────────────────────────
+async function loadAdminMemorials(search) {
+  search = search || '';
+  const qs = search ? '?search=' + encodeURIComponent(search) : '';
+  const { success, data } = await apiFetch('/memorials' + qs);
+  if (success) { _adminMemorialsCache = data; renderAdminMemorials(data); setTimeout(() => generateAdminQRThumbs(data), 150); }
+}
+function renderAdminMemorials(data) {
+  const tbody = document.getElementById('memorialAdminTable');
+  tbody.innerHTML = data.map(m =>
+    '<tr>' +
+    '<td style="color:var(--muted);font-size:0.78rem;">#' + m.id + '</td>' +
+    '<td style="font-weight:700;">' + m.name + '</td>' +
+    '<td style="font-size:0.83rem;">' + (m.born ? new Date(m.born).getFullYear() : '—') + '</td>' +
+    '<td style="font-size:0.83rem;">' + (m.died ? new Date(m.died).getFullYear() : '—') + '</td>' +
+    '<td style="font-weight:700;color:var(--gold);">🕯️ ' + m.candles + '</td>' +
+    '<td><button class="btn-qr-admin" onclick="adminShowQR(' + m.id + ')"><i class="fas fa-qrcode me-1"></i>View QR</button></td>' +
+    '<td><div class="d-flex gap-1">' +
+    '<button class="btn-action btn-view2" onclick="window.open(\'memorial.html?memorial=' + m.id + '\',\'_blank\')" title="View memorial page"><i class="fas fa-external-link-alt"></i></button>' +
+    '<button class="btn-action btn-delete" onclick="deleteMemorial(' + m.id + ')" title="Delete memorial"><i class="fas fa-trash"></i></button>' +
+    '</div></td></tr>').join('');
+}
+function filterAdminMemorials(q) { loadAdminMemorials(q); }
+async function saveMemorial() {
+  const name = document.getElementById('m_name').value.trim();
+  if (!name) { showToast('Name is required.'); return; }
+  const body = { name, born: document.getElementById('m_born').value||null, died: document.getElementById('m_died').value||null, quote: document.getElementById('m_quote').value||'' };
+  const result = await apiFetch('/memorials', { method: 'POST', body: JSON.stringify(body) });
+  if (result.success) { loadAdminMemorials(); bootstrap.Modal.getInstance(document.getElementById('memModal')).hide(); showToast('✅ Memorial added!'); }
+  else showToast('❌ ' + (result.message||'Failed.'));
+}
+async function deleteMemorial(id) {
+  if (!confirm('Delete this memorial?')) return;
+  const result = await apiFetch('/memorials/' + id, { method: 'DELETE' });
+  if (result.success) { loadAdminMemorials(); showToast('🗑️ Memorial deleted.'); }
+  else showToast('❌ ' + (result.message||'Delete failed.'));
+}
+
+
+// ── PHOTO MODERATION ──────────────────────────────────────────────────────────
+let _photoModCache = [];
+
+async function loadPhotoMod() {
+  const grid = document.getElementById('photoModGrid');
+  grid.innerHTML = '<div class="col-12 text-center" style="color:var(--muted);padding:2rem;"><div class="spinner-border spinner-border-sm me-2"></div>Loading photos...</div>';
+  const { success, data } = await apiFetch('/memorials/photos/all');
+  if (!success) { grid.innerHTML = '<div class="col-12 text-center" style="color:var(--muted);padding:2rem;">Could not load photos.</div>'; return; }
+  _photoModCache = data;
+  renderPhotoMod(data);
+  // Update badge
+  const badge = document.getElementById('photoModBadge');
+  if (data.length > 0) { badge.textContent = data.length; badge.style.display = 'inline-block'; }
+  else badge.style.display = 'none';
+}
+
+function renderPhotoMod(data) {
+  const grid = document.getElementById('photoModGrid');
+  if (!data.length) {
+    grid.innerHTML = '<div class="col-12 text-center" style="color:var(--muted);padding:3rem;"><i class="fas fa-images" style="font-size:2rem;margin-bottom:0.5rem;display:block;"></i>No memorial photos uploaded yet.</div>';
+    return;
+  }
+  grid.innerHTML = data.map(p => {
+    const uploaded = p.created_at ? new Date(p.created_at).toLocaleDateString('en-PH', {year:'numeric',month:'short',day:'numeric'}) : '';
+    return '<div class="col-6 col-md-4 col-lg-3" id="photo-mod-item-' + p.id + '">' +
+      '<div class="photo-mod-card">' +
+      '<img class="photo-mod-img" src="' + p.photo_url + '" alt="' + (p.caption||'') + '" onclick="adminLightbox(\'' + p.photo_url.replace(/'/g,"\\'") + '\')" title="Click to enlarge"/>' +
+      '<div class="photo-mod-body">' +
+      '<div class="photo-mod-memorial"><i class="fas fa-heart me-1" style="color:var(--gold);font-size:0.7rem;"></i>' + (p.memorial_name || 'Unknown memorial') + '</div>' +
+      '<div class="photo-mod-caption" id="cap-text-' + p.id + '">' + (p.caption ? '"' + p.caption + '"' : '<span style="color:var(--muted);font-style:normal;">No caption</span>') + '</div>' +
+      '<div class="photo-mod-meta">By: ' + (p.uploaded_by||'Anonymous') + ' · ' + uploaded + '</div>' +
+      '<div class="photo-mod-actions">' +
+      '<button class="btn-action btn-edit" style="flex:1;" onclick="adminEditCaption(' + p.id + ',' + p.memorial_id + ')"><i class="fas fa-pen me-1"></i>Edit Caption</button>' +
+      '<button class="btn-action btn-delete" onclick="adminDeletePhoto(' + p.id + ',' + p.memorial_id + ')"><i class="fas fa-trash"></i></button>' +
+      '</div>' +
+      '</div></div></div>';
+  }).join('');
+}
+
+async function adminDeletePhoto(photoId, memId) {
+  if (!confirm('Delete this photo permanently? This cannot be undone.')) return;
+  const result = await apiFetch('/memorials/' + memId + '/photos/' + photoId, { method: 'DELETE' });
+  if (result.success) {
+    const el = document.getElementById('photo-mod-item-' + photoId);
+    if (el) el.remove();
+    _photoModCache = _photoModCache.filter(p => p.id !== photoId);
+    const badge = document.getElementById('photoModBadge');
+    if (_photoModCache.length > 0) badge.textContent = _photoModCache.length;
+    else badge.style.display = 'none';
+    showToast('🗑️ Photo deleted.');
+  } else {
+    showToast('❌ ' + (result.message || 'Delete failed.'));
+  }
+}
+
+async function adminEditCaption(photoId, memId) {
+  const photo = _photoModCache.find(p => p.id === photoId);
+  const current = photo ? (photo.caption || '') : '';
+  const newCaption = prompt('Edit caption (leave blank to remove):', current);
+  if (newCaption === null) return;
+  const result = await apiFetch('/memorials/' + memId + '/photos/' + photoId, {
+    method: 'PUT',
+    body: JSON.stringify({ caption: newCaption.trim() })
+  });
+  if (result.success) {
+    if (photo) photo.caption = newCaption.trim() || null;
+    const capEl = document.getElementById('cap-text-' + photoId);
+    if (capEl) capEl.innerHTML = newCaption.trim()
+      ? '"' + newCaption.trim() + '"'
+      : '<span style="color:var(--muted);font-style:normal;">No caption</span>';
+    showToast('✅ Caption updated.');
+  } else {
+    showToast('❌ ' + (result.message || 'Update failed.'));
+  }
+}
+
+function adminLightbox(src) {
+  // Simple lightbox using existing admin toast area
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+  overlay.onclick = () => document.body.removeChild(overlay);
+  overlay.innerHTML = '<img src="' + src + '" style="max-width:90vw;max-height:90vh;border-radius:8px;object-fit:contain;"/>' +
+    '<button style="position:absolute;top:16px;right:20px;background:none;border:none;color:white;font-size:1.6rem;cursor:pointer;">&times;</button>';
+  document.body.appendChild(overlay);
+}
+// ── CALENDAR ──────────────────────────────────────────────────────────────────
+async function loadCalendar() {
+  const { success, data } = await apiFetch('/reservations');
+  if (success) RESERVATIONS = data;
+  renderCalendar();
+}
+function renderCalendar() {
+  const now = new Date(); now.setMonth(now.getMonth() + calOffset);
+  const year = now.getFullYear(), month = now.getMonth();
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('calTitle').textContent = months[month] + ' ' + year + ' — Service Calendar';
+  const first = new Date(year,month,1).getDay(), last = new Date(year,month+1,0).getDate();
+  let html = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">';
+  days.forEach(d => html += '<div style="text-align:center;font-size:0.72rem;font-weight:700;color:var(--navy);padding:0.4rem;background:var(--cream);border-radius:4px;">' + d + '</div>');
+  for (let i = 0; i < first; i++) html += '<div></div>';
+  for (let d = 1; d <= last; d++) {
+    const dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    const res = RESERVATIONS.filter(r => (r.service_date||'').startsWith(dateStr) && r.status !== 'cancelled');
+    const hasEvent = res.length > 0;
+    html += '<div style="min-height:60px;border:1px solid ' + (hasEvent?'var(--gold)':'var(--border)') + ';border-radius:4px;padding:0.3rem;background:' + (hasEvent?'var(--gold-pale)':'var(--white)') + ';">';
+    html += '<div style="font-size:0.78rem;font-weight:700;color:' + (hasEvent?'var(--gold)':'var(--text)') + ';">' + d + '</div>';
+    res.forEach(r => { html += '<div style="font-size:0.62rem;background:var(--gold);color:var(--white);border-radius:3px;padding:0.1rem 0.3rem;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + r.fname + '</div>'; });
+    html += '</div>';
+  }
+  html += '</div>';
+  document.getElementById('calendarGrid').innerHTML = html;
+}
+function changeMonth(d) { calOffset += d; loadCalendar(); }
+
+// ── QR ────────────────────────────────────────────────────────────────────────
+function adminMemorialUrl(id) {
+  const base = window.location.origin + window.location.pathname.replace('admin.html','') + 'index.html';
+  return base + '?memorial=' + id;
+}
+function generateAdminQRThumbs(data) {
+  data.forEach(m => {
+    const thumbId = 'admin-qr-thumb-' + m.id;
+    if (document.getElementById(thumbId)) return;
+    const btn = document.querySelector('button[onclick="adminShowQR(' + m.id + ')"]');
+    if (!btn) return;
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:inline-flex;align-items:center;gap:5px;cursor:pointer;background:var(--gold-pale);border-radius:5px;padding:0.3rem 0.6rem;';
+    wrap.id = thumbId; wrap.onclick = () => adminShowQR(m.id);
+    const qDiv = document.createElement('div');
+    qDiv.style.cssText = 'background:#fff;border-radius:2px;padding:2px;width:28px;height:28px;overflow:hidden;flex-shrink:0;';
+    wrap.appendChild(qDiv);
+    const lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:0.68rem;font-weight:700;color:var(--gold);letter-spacing:0.5px;';
+    lbl.textContent = 'QR'; wrap.appendChild(lbl);
+    btn.replaceWith(wrap);
+    new QRCode(qDiv, { text: adminMemorialUrl(m.id), width: 24, height: 24, colorDark:'#152039', colorLight:'#ffffff', correctLevel: QRCode.CorrectLevel.M });
+  });
+}
+function adminShowQR(id) {
+  const m = _adminMemorialsCache.find(x => x.id === id); if (!m) return;
+  const url = adminMemorialUrl(id);
+  document.getElementById('adminQrName').textContent = m.name;
+  const born = m.born ? new Date(m.born).getFullYear() : '', died = m.died ? new Date(m.died).getFullYear() : '';
+  document.getElementById('adminQrDates').textContent = born + (born && died ? ' – ' : '') + died;
+  document.getElementById('adminQrUrl').textContent   = url;
+  const canvas = document.getElementById('adminQrCanvas');
+  canvas.innerHTML = ''; canvas.dataset.memName = m.name;
+  new QRCode(canvas, { text: url, width: 220, height: 220, colorDark: '#152039', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+  new bootstrap.Modal(document.getElementById('adminQrModal')).show();
+}
+function adminDownloadQR() {
+  const canvas = document.getElementById('adminQrCanvas');
+  const img = canvas.querySelector('img') || canvas.querySelector('canvas'); if (!img) return;
+  const name = (canvas.dataset.memName || 'memorial').replace(/\s+/g, '_');
+  const link = document.createElement('a');
+  link.href = img.tagName === 'CANVAS' ? img.toDataURL('image/png') : img.src;
+  link.download = 'memorial_qr_' + name + '.png'; link.click();
+  showToast('✅ QR code downloaded!');
+}
+function adminCopyQRLink() {
+  navigator.clipboard.writeText(document.getElementById('adminQrUrl').textContent).then(() => showToast('📋 Link copied!'));
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+// ─── PRINT CONTRACT ──────────────────────────────────────────────────────────
+function printContract(id) {
+  const r = RESERVATIONS.find(x => x.id === id);
+  if (!r) { showToast('Reservation not found.'); return; }
+
+  const fmt = v => {
+    const n = parseFloat(v);
+    return (!v || isNaN(n) || n === 0) ? '' : n.toLocaleString('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2});
+  };
+
+  const pCoffin   = fmt(r.price_coffin);
+  const pCar      = fmt(r.price_funeral_car);
+  const pSvc      = fmt(r.price_funeral_services);
+  const pEmb      = fmt(r.price_embalming);
+  const pOther    = fmt(r.price_other);
+  const pTotal    = fmt(r.price_total);
+  const pAdvance  = fmt(r.price_advance);
+  const pBalance  = fmt(r.price_balance);
+
+  const serviceDate = r.service_date ? new Date(r.service_date).toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'}) : '_______________';
+  const burialTime  = r.burial_time  || '_______________';
+  const burialPlace = r.burial_place || '_______________';
+  const today       = new Date().toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'});
+
+  const win = window.open('', '_blank', 'width=700,height=900');
+  win.document.write(`<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8"/>
+<title>Service Contract #${r.id} – Eternal Rest</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Arial, sans-serif; font-size: 13px; color: #111; background: #fff; padding: 24px 32px; }
+  .header { text-align: center; border-bottom: 2px solid #111; padding-bottom: 10px; margin-bottom: 14px; }
+  .header h1 { font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+  .header p  { font-size: 11px; margin: 2px 0; }
+  .contract-title { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 14px; }
+  .contract-title h2 { font-size: 18px; font-weight: 900; text-transform: uppercase; }
+  .contract-title .no { font-size: 13px; }
+  .contract-title .no span { font-size: 18px; font-weight: 700; color: #c0392b; }
+  .field-row { display: flex; align-items: flex-end; margin-bottom: 7px; font-size: 13px; }
+  .field-row label { font-weight: 700; white-space: nowrap; margin-right: 6px; }
+  .field-line { flex: 1; border-bottom: 1px solid #111; min-width: 80px; padding-bottom: 1px; }
+  .field-row .date-col { display: flex; align-items: flex-end; margin-left: 24px; }
+  .section-gap { margin-top: 14px; }
+  table.price-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+  table.price-table th, table.price-table td { border: 1px solid #111; padding: 5px 8px; }
+  table.price-table thead th { font-weight: 700; text-align: center; font-size: 12px; }
+  table.price-table td.label-col { font-weight: 600; width: 65%; }
+  table.price-table td.amt-col { width: 20%; text-align: right; font-family: monospace; }
+  table.price-table td.cts-col { width: 15%; border-left: 1px solid #111; }
+  table.price-table tr.total-row td { font-weight: 900; background: #f5f5f5; font-size: 13px; }
+  table.price-table tr.subtotal-row td { font-weight: 700; }
+  .summary-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .summary-table td { border: 1px solid #111; padding: 5px 8px; }
+  .summary-table td.lbl { font-weight: 700; width: 20%; }
+  .summary-table td.val { font-family: monospace; text-align: right; width: 30%; }
+  .signatures { margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .sig-block { text-align: center; width: 42%; }
+  .sig-name { font-weight: 900; font-size: 14px; text-transform: uppercase; }
+  .sig-title { font-size: 11px; font-weight: 700; }
+  .sig-line { border-top: 1px solid #111; margin-bottom: 4px; padding-top: 4px; font-size: 11px; color: #555; }
+  .owner-block { text-align: center; margin-bottom: 24px; }
+  .owner-block .name { font-weight: 900; font-size: 15px; text-transform: uppercase; }
+  .owner-block .title { font-size: 11px; }
+  .contract-no { font-size: 11px; color: #888; text-align: right; margin-bottom: 4px; }
+  @media print { body { padding: 12px 20px; } }
+</style>
+</head><body>
+<div class="header">
+  <h1>Eternal Rest Funeral Home</h1>
+  <p>123 Remembrance Ave, Makati City, Metro Manila</p>
+  <p>Tel: +63 (2) 8888-0000 &nbsp;|&nbsp; care@eternalrest.ph</p>
+</div>
+
+<div class="contract-title">
+  <h2>Contract</h2>
+  <div class="no">No. &nbsp;<span>${String(r.id).padStart(4,'0')}</span></div>
+</div>
+
+<!-- Top fields -->
+<div class="field-row">
+  <label>Price&nbsp;(₱</label>
+  <span class="field-line" style="max-width:140px;">${pTotal}</span>
+  <span style="margin-right:16px;">)</span>
+  <label style="margin-left:auto;">DATE:</label>
+  <span class="field-line" style="max-width:160px;">${today}</span>
+</div>
+
+<div class="field-row">
+  <label>Mr./Mrs.</label>
+  <span class="field-line">${r.fname} ${r.lname}</span>
+</div>
+<div class="field-row">
+  <label>Address:</label>
+  <span class="field-line">${r.client_address || ''}</span>
+</div>
+<div class="section-gap"></div>
+<div class="field-row">
+  <label>Name of Deceased:</label>
+  <span class="field-line">${r.deceased_name || ''}</span>
+</div>
+<div class="field-row">
+  <label>Address:</label>
+  <span class="field-line">${r.deceased_address || ''}</span>
+</div>
+<div class="field-row">
+  <label>Time of Burial:</label>
+  <span class="field-line" style="max-width:180px;">${burialTime}</span>
+</div>
+<div class="field-row">
+  <label>Place of Burial:</label>
+  <span class="field-line">${burialPlace}</span>
+</div>
+
+<!-- Price table -->
+<table class="price-table">
+  <thead>
+    <tr><th style="text-align:left;width:65%;">&nbsp;</th><th>PESOS</th><th>Cts.</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="label-col">Coffin</td><td class="amt-col">${pCoffin}</td><td class="cts-col"></td></tr>
+    <tr><td class="label-col">Funeral Car</td><td class="amt-col">${pCar}</td><td class="cts-col"></td></tr>
+    <tr><td class="label-col">Funeral Services</td><td class="amt-col">${pSvc}</td><td class="cts-col"></td></tr>
+    <tr><td class="label-col">Embalming</td><td class="amt-col">${pEmb}</td><td class="cts-col"></td></tr>
+    ${r.price_other ? '<tr><td class="label-col">Other Charges</td><td class="amt-col">' + pOther + '</td><td class="cts-col"></td></tr>' : '<tr><td class="label-col">&nbsp;</td><td class="amt-col"></td><td class="cts-col"></td></tr>'}
+    <tr><td class="label-col">&nbsp;</td><td class="amt-col"></td><td class="cts-col"></td></tr>
+    <tr class="total-row"><td class="label-col" style="text-align:right;">TOTAL &nbsp;– &nbsp;₱</td><td class="amt-col">${pTotal}</td><td class="cts-col"></td></tr>
+  </tbody>
+</table>
+
+<!-- Payment summary -->
+<table class="summary-table">
+  <tr>
+    <td class="lbl">Price</td><td></td><td></td>
+    <td class="lbl">Advance</td><td class="val">${pAdvance}</td><td></td>
+  </tr>
+  <tr>
+    <td class="lbl">Balance</td><td class="val">${pBalance}</td><td></td>
+    <td></td><td></td><td></td>
+  </tr>
+  <tr>
+    <td colspan="2" style="text-align:right;font-weight:700;">TOTAL BALANCE</td>
+    <td colspan="4" style="font-family:monospace;font-weight:700;">${pBalance}</td>
+  </tr>
+</table>
+
+<!-- Owner block -->
+<div class="owner-block" style="margin-top:32px;">
+  <div class="name">Eternal Rest Funeral Home</div>
+  <div class="title">Owner / Administrator</div>
+</div>
+
+<!-- Signature lines -->
+<div class="signatures">
+  <div class="sig-block">
+    <div style="height:40px;"></div>
+    <div class="sig-line">Signature</div>
+    <div style="font-size:11px;margin-top:2px;">${r.fname} ${r.lname}</div>
+    <div style="font-size:10px;color:#555;">Client</div>
+  </div>
+  <div class="sig-block">
+    <div style="height:40px;"></div>
+    <div class="sig-line">Signature</div>
+    <div style="font-size:11px;margin-top:2px;">___________________________</div>
+    <div style="font-size:10px;color:#555;">Representative / Staff</div>
+  </div>
+</div>
+
+<div style="margin-top:24px;font-size:10px;color:#888;text-align:center;">
+  Eternal Rest Funeral Home &nbsp;|&nbsp; Contract #${String(r.id).padStart(4,'0')} &nbsp;|&nbsp; Generated ${today}
+</div>
+
+<scr' + 'ipt>window.onload = () => { window.print(); }<\/scr' + 'ipt>
+</body></html>`);
+  win.document.close();
+}
+
+function showToast(msg) {
+  document.getElementById('adminToastMsg').textContent = msg;
+  new bootstrap.Toast(document.getElementById('adminToast'), { delay: 3000 }).show();
+}
+
+// ── PHOTO UPLOAD STATE ────────────────────────────────────────────────────────
+let pendingPhotoFile  = null;
+let currentPhotoUrl   = null;
+let photoRemovePending = false;
+
+function resetPhotoZone() {
+  pendingPhotoFile   = null;
+  currentPhotoUrl    = null;
+  photoRemovePending = false;
+  const zone = document.getElementById('photoDropZone');
+  const prev = document.getElementById('photoPreviewImg');
+  const ph   = document.getElementById('dropPlaceholder');
+  const acts = document.getElementById('photoActionBtns');
+  const stat = document.getElementById('photoUploadStatus');
+  const inp  = document.getElementById('photoFileInput');
+  zone.classList.remove('has-photo');
+  prev.style.display = 'none';
+  prev.src = '';
+  ph.style.display   = 'flex';
+  acts.style.display = 'none';
+  if (stat) stat.textContent = '';
+  if (inp)  inp.value = '';
+}
+
+function setPhotoPreview(src) {
+  const zone = document.getElementById('photoDropZone');
+  const prev = document.getElementById('photoPreviewImg');
+  const ph   = document.getElementById('dropPlaceholder');
+  const acts = document.getElementById('photoActionBtns');
+  zone.classList.add('has-photo');
+  prev.src = src;
+  prev.style.display = 'block';
+  ph.style.display   = 'none';
+  acts.style.display = 'flex';
+}
+
+function triggerPhotoInput() {
+  document.getElementById('photoFileInput').click();
+}
+
+function onPhotoFileSelected(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const maxMB = 5;
+  if (file.size > maxMB * 1024 * 1024) {
+    showToast('❌ Photo must be smaller than ' + maxMB + ' MB.');
+    input.value = '';
+    return;
+  }
+  pendingPhotoFile   = file;
+  photoRemovePending = false;
+  const reader = new FileReader();
+  reader.onload = e => setPhotoPreview(e.target.result);
+  reader.readAsDataURL(file);
+  const stat = document.getElementById('photoUploadStatus');
+  if (stat) { stat.style.color = 'var(--muted)'; stat.textContent = 'Photo selected — will be saved when you click Save Casket.'; }
+}
+
+function onPhotoDragOver(e) {
+  e.preventDefault();
+  document.getElementById('photoDropZone').classList.add('drag-over');
+}
+
+function onPhotoDragLeave(e) {
+  document.getElementById('photoDropZone').classList.remove('drag-over');
+}
+
+function onPhotoDrop(e) {
+  e.preventDefault();
+  document.getElementById('photoDropZone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) { showToast('Please drop an image file.'); return; }
+  const input = document.getElementById('photoFileInput');
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  input.files = dt.files;
+  onPhotoFileSelected(input);
+}
+
+function removePhoto() {
+  if (editingCasketId && currentPhotoUrl) {
+    photoRemovePending = true;
+  }
+  pendingPhotoFile = null;
+  resetPhotoZone();
+  const stat = document.getElementById('photoUploadStatus');
+  if (stat && editingCasketId) { stat.style.color = 'var(--danger)'; stat.textContent = 'Photo will be removed when you click Save Casket.'; }
+}
+
+async function uploadPhoto(casketId) {
+  if (!pendingPhotoFile) return;
+  const formData = new FormData();
+  formData.append('photo', pendingPhotoFile);
+  const stat = document.getElementById('photoUploadStatus');
+  if (stat) { stat.style.color = 'var(--muted)'; stat.textContent = 'Uploading photo…'; }
+  try {
+    const res = await fetch(API_BASE + '/caskets/' + casketId + '/photo', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AUTH_TOKEN },
+      body: formData
+    });
+    const data = await res.json();
+    if (!data.success) showToast('⚠️ Photo upload failed: ' + (data.message || 'Unknown error'));
+    if (stat) stat.textContent = '';
+  } catch (err) {
+    showToast('⚠️ Photo upload failed — check network.');
+    if (stat) stat.textContent = '';
+  }
+  pendingPhotoFile = null;
+}
+
+// ── MODAL RESET ───────────────────────────────────────────────────────────────
+document.getElementById('casketModal').addEventListener('show.bs.modal', () => {
+  if (!editingCasketId) {
+    document.getElementById('casketModalTitle').textContent = 'Add New Casket';
+    ['c_name','c_material','c_price','c_desc','c_features'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('c_stock').value  = '1';
+    document.getElementById('c_status').value = 'available';
+    resetPhotoZone();
+  }
+});
+
+// ── SESSION RESTORE ───────────────────────────────────────────────────────────
+(async () => {
+  if (AUTH_TOKEN) {
+    const result = await apiFetch('/auth/me');
+    if (result.success) {
+      const role = result.user.role;
+      if (role !== 'admin' && role !== 'superadmin') {
+        localStorage.removeItem('er_admin_token');
+        AUTH_TOKEN = null;
+        return;
+      }
+      CURRENT_USER = result.user;
+      // Superadmin with saved token on admin.html → send to their panel
+      if (result.user.role === 'superadmin') {
+        window.location.href = 'superadmin.html';
+        return;
+      }
+      isLoggedIn   = true;
+      document.getElementById('loginScreen').style.display = 'none';
+      const u = result.user;
+      const initials = (u.fname[0] + (u.lname[0]||'')).toUpperCase();
+      setUserUI(u.fname + ' ' + u.lname, u.role, initials, u.branch_name);
+      initDashboard();
+      checkMsgBadge();
+      setInterval(checkMsgBadge, 30000);
+      startMsgPolling();
+    } else {
+      AUTH_TOKEN = null;
+      localStorage.removeItem('er_admin_token');
+    }
+  }
+})();
+
+// ─── ANALYTICS ───────────────────────────────────────────────
+let chartInstances = {};
+
+async function loadAnalytics() {
+  const result = await apiFetch('/reservations/analytics');
+  if (!result.success) { showToast('Could not load analytics.'); return; }
+  const d = result.data;
+
+  // Stat cards
+  const fmt = v => '₱' + Number(v||0).toLocaleString('en-PH',{minimumFractionDigits:0,maximumFractionDigits:0});
+  document.getElementById('an-revenue').textContent     = fmt(d.totals.total_revenue);
+  document.getElementById('an-collected').textContent   = fmt(d.totals.total_collected);
+  document.getElementById('an-outstanding').textContent = fmt(d.totals.total_outstanding);
+  document.getElementById('an-total-res').textContent   = d.totals.total_reservations;
+
+  // Monthly revenue bar chart
+  buildChart('monthlyChart', 'bar', {
+    labels: d.monthly.map(m => m.month),
+    datasets: [{
+      label: 'Revenue (₱)',
+      data: d.monthly.map(m => m.revenue),
+      backgroundColor: 'rgba(184,151,58,0.7)',
+      borderColor: '#b8973a',
+      borderWidth: 2,
+      borderRadius: 6
+    }]
+  }, {
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, ticks: { callback: v => '₱'+Number(v).toLocaleString() } } }
+  });
+
+  // Status doughnut
+  const statusColors = { pending:'#dbeafe', confirmed:'#d1fae5', completed:'#ede9fe', cancelled:'#fee2e2' };
+  buildChart('statusChart', 'doughnut', {
+    labels: d.byStatus.map(s => s.status),
+    datasets: [{ data: d.byStatus.map(s => s.count), backgroundColor: d.byStatus.map(s => statusColors[s.status]||'#e5e7eb'), borderWidth: 2 }]
+  }, { plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } });
+
+  // Payment method bar
+  const pmColors = { walkin:'#1c2b4a', bpi:'#d31a21', bdo:'#003087', installment:'#b8973a' };
+  buildChart('paymentChart', 'bar', {
+    labels: d.byPayment.map(p => p.payment_method),
+    datasets: [{ label: 'Count', data: d.byPayment.map(p => p.count), backgroundColor: d.byPayment.map(p => pmColors[p.payment_method]||'#6b7280'), borderRadius: 4 }]
+  }, { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } });
+
+  // Service type pie
+  const stColors = ['#b8973a','#1c2b4a','#4a7c59','#2980b9','#d97706'];
+  buildChart('serviceChart', 'pie', {
+    labels: d.byType.map(t => t.service_type || 'N/A'),
+    datasets: [{ data: d.byType.map(t => t.count), backgroundColor: stColors, borderWidth: 2 }]
+  }, { plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } });
+
+  // Inventory summary list
+  const invEl = document.getElementById('inventorySummaryList');
+  if (invEl) {
+    invEl.innerHTML = (d.byStatus ? [] : []).join('') ||
+      `<div style="font-size:0.85rem;">
+        <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border);"><span>Available</span><span class="badge-status badge-available" id="inv-available">—</span></div>
+        <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border);"><span>Limited</span><span class="badge-status badge-limited" id="inv-limited">—</span></div>
+        <div style="display:flex;justify-content:space-between;padding:0.5rem 0;"><span>Reserved</span><span class="badge-status badge-reserved" id="inv-reserved">—</span></div>
+      </div>`;
+    // Populate from stats
+    apiFetch('/dashboard/stats').then(sr => {
+      if (!sr.success) return;
+      const inv = sr.data.inventory || [];
+      inv.forEach(item => {
+        const el = document.getElementById('inv-' + item.status);
+        if (el) el.textContent = `${item.count} caskets · ${item.totalStock} units`;
+      });
+    });
+  }
+
+  // Sales report table
+  const tbody = document.getElementById('salesReportTable');
+  if (tbody && d.monthly) {
+    tbody.innerHTML = d.monthly.map(m => `
+      <tr>
+        <td>${m.month}</td>
+        <td><span class="badge-status badge-pending">${m.count}</span></td>
+        <td style="font-weight:700;color:var(--gold);">₱${Number(m.revenue).toLocaleString()}</td>
+        <td style="color:var(--success);">₱${Number(m.collected||0).toLocaleString()}</td>
+      </tr>`).join('') || '<tr><td colspan="4" class="text-center text-muted">No data available.</td></tr>';
+  }
+}
+
+function buildChart(canvasId, type, data, options = {}) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  if (chartInstances[canvasId]) { chartInstances[canvasId].destroy(); }
+  chartInstances[canvasId] = new Chart(ctx.getContext('2d'), {
+    type, data,
+    options: { responsive: true, maintainAspectRatio: true, ...options }
+  });
+}
+
+function exportSalesReport() {
+  const rows = [['Month','Reservations','Revenue']];
+  document.querySelectorAll('#salesReportTable tr').forEach(tr => {
+    rows.push(Array.from(tr.querySelectorAll('td')).map(td => td.textContent.trim()));
+  });
+  const csv  = rows.map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'sales_report_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+
+
+
+// ── INVENTORY MESSAGES ─────────────────────────────────────────
+let MESSAGES = [];
+let _msgPollTimer = null;
+
+async function loadMessages() {
+  const { success, data } = await apiFetch('/messages');
+  if (!success) return;
+  MESSAGES = data;
+  const box = document.getElementById('chatMessages');
+  if (!box) return;
+
+  if (!data.length) {
+    box.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:0.82rem;padding:2rem;">No messages yet.\nSend a stock request to Super Admin.</div>';
+    return;
+  }
+
+  const myId = CURRENT_USER ? CURRENT_USER.id : null;
+  // Remember scroll position — only auto-scroll if near bottom
+  const wasAtBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
+
+  box.innerHTML = data.map(m => {
+    const isMine = m.sender_id == myId;
+    const time = new Date(m.created_at).toLocaleString('en-PH', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+    const typeTag = m.msg_type === 'request'
+      ? '<span style="font-size:0.62rem;background:#fff3cd;color:#856404;border-radius:10px;padding:1px 7px;margin-left:5px;font-weight:600;">REQUEST</span>'
+      : m.msg_type === 'reply'
+      ? '<span style="font-size:0.62rem;background:#d1fae5;color:#065f46;border-radius:10px;padding:1px 7px;margin-left:5px;font-weight:600;">REPLY</span>'
+      : '';
+    const senderLabel = isMine ? 'You' : '👤 Super Admin';
+    return (
+      '<div style="display:flex;flex-direction:column;align-items:' + (isMine ? 'flex-end' : 'flex-start') + ';gap:3px;margin-bottom:4px;">' +
+        '<div style="font-size:0.67rem;color:var(--muted);padding:0 4px;">' + senderLabel + typeTag + '&nbsp;·&nbsp;' + time + '</div>' +
+        '<div style="max-width:82%;background:' + (isMine ? 'var(--gold)' : '#fff') + ';color:' + (isMine ? '#fff' : 'var(--navy)') + ';' +
+          'border-radius:' + (isMine ? '14px 14px 2px 14px' : '14px 14px 14px 2px') + ';' +
+          'padding:0.65rem 1rem;font-size:0.84rem;box-shadow:0 1px 4px rgba(0,0,0,0.09);word-break:break-word;">' +
+          m.message +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+
+  if (wasAtBottom) box.scrollTop = box.scrollHeight;
+
+  // Mark SA replies as read
+  await apiFetch('/messages/mark-read', { method: 'PUT', body: JSON.stringify({}) });
+  updateMsgBadge(0);
+}
+
+// Auto-poll messages every 15s while on the messages page
+function startMsgPolling() {
+  stopMsgPolling();
+  _msgPollTimer = setInterval(() => {
+    const page = document.querySelector('.page-section.active');
+    if (page && page.id === 'page-messages') loadMessages();
+  }, 15000);
+}
+function stopMsgPolling() {
+  if (_msgPollTimer) { clearInterval(_msgPollTimer); _msgPollTimer = null; }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const typeEl = document.getElementById('chatMsgType');
+  const msg = input ? input.value.trim() : '';
+  if (!msg) return;
+  // Disable input while sending
+  if (input) input.disabled = true;
+  const { success, message: errMsg } = await apiFetch('/messages', {
+    method: 'POST',
+    body: JSON.stringify({ message: msg, msg_type: typeEl ? typeEl.value : 'info' })
+  });
+  if (input) input.disabled = false;
+  if (success) {
+    input.value = '';
+    loadMessages();
+  } else {
+    showToast('❌ ' + (errMsg || 'Failed to send message.'));
+    if (input) input.focus();
+  }
+}
+
+function useTemplate(t) {
+  const el = document.getElementById('chatInput');
+  if (el) { el.value = t; el.focus(); }
+  const typeEl = document.getElementById('chatMsgType');
+  if (typeEl) typeEl.value = 'request';
+}
+
+async function checkMsgBadge() {
+  const { success, unread } = await apiFetch('/messages/unread-count');
+  if (success) updateMsgBadge(unread);
+}
+function updateMsgBadge(n) {
+  const el = document.getElementById('msgBadge');
+  if (!el) return;
+  el.textContent = n;
+  el.style.display = n > 0 ? 'inline-flex' : 'none';
+}
+
+// ── CASKET INCLUSIONS ──────────────────────────────────────────
+let CASKET_INCLUSIONS = []; // array of {item_name, quantity, unit}
+function addInclusion() {
+  const item = document.getElementById('c_incl_item').value.trim();
+  const qty  = parseInt(document.getElementById('c_incl_qty').value) || 1;
+  const unit = document.getElementById('c_incl_unit').value.trim() || null;
+  if (!item) return;
+  CASKET_INCLUSIONS.push({ item_name: item, quantity: qty, unit });
+  renderInclusionsList();
+  document.getElementById('c_incl_item').value = '';
+  document.getElementById('c_incl_qty').value = '1';
+  document.getElementById('c_incl_unit').value = '';
+}
+function removeInclusion(i) {
+  CASKET_INCLUSIONS.splice(i, 1);
+  renderInclusionsList();
+}
+function renderInclusionsList() {
+  const el = document.getElementById('inclusionsList');
+  if (!el) return;
+  el.innerHTML = CASKET_INCLUSIONS.map((inc, i) =>
+    '<span style="background:var(--gold-pale);color:var(--navy);border:1px solid var(--gold);border-radius:20px;padding:3px 10px;font-size:0.75rem;display:inline-flex;align-items:center;gap:5px;">' +
+    inc.quantity + (inc.unit?' '+inc.unit+' ':'x ') + inc.item_name +
+    '<button type="button" onclick="removeInclusion('+i+')" style="background:none;border:none;color:var(--danger);cursor:pointer;padding:0;font-size:0.8rem;line-height:1;">&times;</button></span>'
+  ).join('');
+}
+async function loadCasketInclusions(casketId) {
+  const { success, data } = await apiFetch('/caskets/' + casketId + '/inclusions');
+  CASKET_INCLUSIONS = success ? data.map(d => ({item_name:d.item_name,quantity:d.quantity,unit:d.unit})) : [];
+  renderInclusionsList();
+}
+
+// Hook into showPage to auto-load messages when navigating there
+const _origShowPage = typeof showPage === 'function' ? showPage : null;
+
+</script>
+</body>
+</html>
